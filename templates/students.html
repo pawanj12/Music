@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Students — Minerva Admin</title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+
+</head>
+
+<body>
+
+    <div class="admin-layout">
+
+        {% set active_page = "students" %}
+        {% include "admin_sidebar.html" %}
+
+        <main class="admin-main">
+
+            <!-- TOPBAR -->
+
+            <div class="admin-topbar">
+
+                <div>
+                    <h1>Students</h1>
+
+                    <p>
+                        Manage all enrolled students
+                    </p>
+                </div>
+
+                <div class="admin-topbar-actions">
+
+                    <button id="adminThemeToggle" class="admin-theme-toggle" type="button">
+                        Theme
+                    </button>
+
+                    <a href="{{ url_for('logout') }}" class="admin-topbar-link">
+                        Logout
+                    </a>
+
+                </div>
+
+            </div>
+
+
+            <!-- STATS -->
+
+            <section class="admin-stats-grid">
+
+                <div class="admin-stat-card">
+
+                    <span>Total Students</span>
+
+                    <strong>
+                        {{ total_students }}
+                    </strong>
+
+                </div>
+
+
+                <div class="admin-stat-card">
+
+                    <span>Active Students</span>
+
+                    <strong>
+                        {{ active_students }}
+                    </strong>
+
+                </div>
+
+
+                <div class="admin-stat-card">
+
+                    <span>Inactive Students</span>
+
+                    <strong>
+                        {{ inactive_students }}
+                    </strong>
+
+                </div>
+
+            </section>
+
+
+            <!-- FILTER -->
+
+            <section class="admin-card">
+
+                <div class="admin-card-header">
+
+                    <div>
+                        <h2>Student Directory</h2>
+
+                        <p>
+                            Search and manage enrolled students.
+                        </p>
+                    </div>
+
+                    <a href="{{ url_for('add_student') }}" class="admin-primary-button">
+                        + Add Student
+                    </a>
+
+                </div>
+
+
+                <form method="GET" action="{{ url_for('admin_students') }}" class="student-filter-form">
+
+                    <input type="text" name="q" value="{{ q }}" placeholder="Search name, phone, email, instrument...">
+
+
+                    <select name="status">
+
+                        <option value="ALL" {% if status=="ALL" %}selected{% endif %}>
+                            All Status
+                        </option>
+
+                        <option value="ACTIVE" {% if status=="ACTIVE" %}selected{% endif %}>
+                            Active
+                        </option>
+
+                        <option value="INACTIVE" {% if status=="INACTIVE" %}selected{% endif %}>
+                            Inactive
+                        </option>
+
+                    </select>
+
+
+                    <button type="submit" class="admin-primary-button">
+                        Search
+                    </button>
+
+
+                    <a href="{{ url_for('admin_students') }}" class="admin-secondary-button">
+                        Reset
+                    </a>
+
+                </form>
+
+            </section>
+
+
+            <!-- STUDENT TABLE -->
+
+            <section class="admin-card">
+
+                <div class="admin-table-wrapper">
+
+                    <table class="admin-table">
+
+                        <thead>
+
+                            <tr>
+
+                                <th>Student</th>
+
+                                <th>Code</th>
+
+                                <th>Contact</th>
+
+                                <th>Instrument</th>
+
+                                <th>Teacher</th>
+
+                                <th>Enrollment</th>
+
+                                <th>Status</th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            {% if students %}
+
+                            {% for student in students %}
+
+                            <tr>
+
+                                <td>
+
+                                    <a href="{{ url_for('student_details', student_id=student.id) }}"
+                                        class="student-name-link">
+                                        {{ student.full_name }}
+                                    </a>
+
+                                    {% if student.age %}
+                                    <small>
+                                        Age {{ student.age }}
+                                    </small>
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    {{ student.student_code }}
+
+                                </td>
+
+
+                                <td>
+
+                                    <div>
+                                        {{ student.phone or "—" }}
+                                    </div>
+
+                                    <small>
+                                        {{ student.email or "—" }}
+                                    </small>
+
+                                </td>
+
+
+                                <td>
+
+                                    {{ student.instrument or "—" }}
+
+                                </td>
+
+
+                                <td>
+
+                                    {{ student.teacher_name or "Not assigned" }}
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if student.enrollment_date %}
+
+                                    {{ student.enrollment_date.strftime("%d %b %Y") }}
+
+                                    {% else %}
+
+                                    —
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    {% if student.status == "ACTIVE" %}
+
+                                    <span class="admin-status active">
+                                        ACTIVE
+                                    </span>
+
+                                    {% else %}
+
+                                    <span class="admin-status inactive">
+                                        {{ student.status }}
+                                    </span>
+
+                                    {% endif %}
+
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                            {% else %}
+
+                            <tr>
+
+                                <td colspan="7" class="admin-empty-state">
+
+                                    <strong>
+                                        No students found
+                                    </strong>
+
+                                    <p>
+                                        Students will appear here after enrolment.
+                                    </p>
+
+                                </td>
+
+                            </tr>
+
+                            {% endif %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+    <script src="{{ url_for('static', filename='javascript/admin.js') }}"></script>
+
+</body>
+
+</html>

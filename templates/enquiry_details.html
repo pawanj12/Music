@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>
+        Enquiry Details — Minerva Admin
+    </title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/admin.css') }}"
+    >
+
+</head>
+
+
+<body>
+
+
+    {% include 'admin_sidebar.html' %}
+
+
+    <!-- MOBILE MENU -->
+
+    <button
+        type="button"
+        id="adminMobileToggle"
+        class="admin-mobile-toggle"
+        aria-label="Open admin menu"
+    >
+
+        <i class="fa-solid fa-bars"></i>
+
+    </button>
+
+
+    <!-- ========================================================
+         MAIN
+         ======================================================== -->
+
+    <main class="admin-main">
+
+
+        <!-- HEADER -->
+
+        <div class="admin-page-header">
+
+            <div>
+
+                <p class="admin-eyebrow">
+                    Enquiries
+                </p>
+
+                <h1>
+                    Enquiry Details
+                </h1>
+
+                <p>
+                    Manage this enquiry, assign a teacher
+                    and schedule the demo.
+                </p>
+
+            </div>
+
+
+            <div
+                style="
+                    display:flex;
+                    gap:10px;
+                    flex-wrap:wrap;
+                "
+            >
+
+                <a
+                    href="{{ url_for('admin_teachers') }}"
+                    class="admin-secondary-button"
+                >
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                    &nbsp;
+                    Manage Teachers
+                </a>
+
+
+                <a
+                    href="{{ url_for('admin_enquiries') }}"
+                    class="admin-secondary-button"
+                >
+                    Back to Enquiries
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- SUCCESS -->
+
+        {% if request.args.get('updated') == '1' %}
+
+            <div
+                class="admin-alert admin-alert-success"
+            >
+
+                Enquiry updated successfully.
+
+            </div>
+
+        {% endif %}
+
+
+        <!-- ====================================================
+             TWO COLUMN AREA
+             ==================================================== -->
+
+        <section
+            class="admin-grid admin-grid-2"
+        >
+
+
+            <!-- ==================================================
+                 CUSTOMER DETAILS
+                 ================================================== -->
+
+            <div class="admin-card">
+
+
+                <div class="admin-card-header">
+
+                    <div>
+
+                        <span class="admin-card-kicker">
+                            Customer
+                        </span>
+
+                        <h2>
+                            {{ enquiry.full_name }}
+                        </h2>
+
+                    </div>
+
+
+                    <span
+                        class="
+                            admin-status
+                            admin-status-{{ enquiry.status|lower }}
+                        "
+                    >
+                        {{ enquiry.status|replace('_', ' ') }}
+                    </span>
+
+                </div>
+
+
+                <div class="admin-detail-list">
+
+
+                    <div class="admin-detail-row">
+
+                        <span>
+                            Demo ID
+                        </span>
+
+                        <strong>
+                            {{ enquiry.demo_id }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="admin-detail-row">
+
+                        <span>
+                            Phone
+                        </span>
+
+                        <strong>
+                            {{ enquiry.phone }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="admin-detail-row">
+
+                        <span>
+                            Email
+                        </span>
+
+                        <strong>
+                            {{ enquiry.email }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="admin-detail-row">
+
+                        <span>
+                            Instrument
+                        </span>
+
+                        <strong>
+                            {{ enquiry.instrument }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="admin-detail-row">
+
+                        <span>
+                            Age
+                        </span>
+
+                        <strong>
+                            {{ enquiry.age or '—' }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="admin-detail-row">
+
+                        <span>
+                            Preferred Time
+                        </span>
+
+                        <strong>
+                            {{ enquiry.preferred_time or '—' }}
+                        </strong>
+
+                    </div>
+
+
+                    <div class="admin-detail-row">
+
+                        <span>
+                            Created
+                        </span>
+
+                        <strong>
+                            {{ enquiry.created_at.strftime(
+                                '%d %b %Y, %I:%M %p'
+                            ) }}
+                        </strong>
+
+                    </div>
+
+
+                </div>
+
+
+                <!-- MESSAGE -->
+
+                <div class="admin-message-box">
+
+                    <span>
+                        Message / Notes
+                    </span>
+
+                    <p>
+                        {{ enquiry.message
+                           or
+                           'No message was added.'
+                        }}
+                    </p>
+
+                </div>
+
+
+            </div>
+
+
+            <!-- ==================================================
+                 TEACHER ASSIGNMENT
+                 ================================================== -->
+
+            <div class="admin-card">
+
+
+                <div class="admin-card-header">
+
+                    <div>
+
+                        <span class="admin-card-kicker">
+                            Management
+                        </span>
+
+                        <h2>
+                            Assign Teacher & Schedule
+                        </h2>
+
+                    </div>
+
+                </div>
+
+
+                <form
+                    method="POST"
+                    action="{{
+                        url_for(
+                            'update_enquiry',
+                            enquiry_id=enquiry.id
+                        )
+                    }}"
+                    class="admin-form"
+                >
+
+
+                    <!-- STATUS -->
+
+                    <div class="admin-form-group">
+
+                        <label for="status">
+                            Status
+                        </label>
+
+                        <select
+                            id="status"
+                            name="status"
+                            required
+                        >
+
+                            {% for item in allowed_statuses %}
+
+                                <option
+                                    value="{{ item }}"
+                                    {% if enquiry.status == item %}
+                                        selected
+                                    {% endif %}
+                                >
+                                    {{ item|replace('_', ' ') }}
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- TEACHER -->
+
+                    <div class="admin-form-group">
+
+                        <label for="teacher_id">
+                            Assign Teacher
+                        </label>
+
+                        <select
+                            id="teacher_id"
+                            name="teacher_id"
+                        >
+
+                            <option value="">
+                                Not assigned
+                            </option>
+
+
+                            {% for teacher in teachers %}
+
+                                <option
+                                    value="{{ teacher.id }}"
+                                    {% if enquiry.teacher_id == teacher.id %}
+                                        selected
+                                    {% endif %}
+                                >
+
+                                    {{ teacher.full_name }}
+                                    —
+                                    {{ teacher.email }}
+
+                                </option>
+
+                            {% endfor %}
+
+                        </select>
+
+                    </div>
+
+
+                    <!-- DATE + TIME -->
+
+                    <div class="admin-form-row">
+
+
+                        <div class="admin-form-group">
+
+                            <label for="demo_date">
+                                Demo Date
+                            </label>
+
+                            <input
+                                type="date"
+                                id="demo_date"
+                                name="demo_date"
+                                value="{{
+                                    enquiry.demo_date.strftime(
+                                        '%Y-%m-%d'
+                                    )
+                                    if enquiry.demo_date
+                                    else ''
+                                }}"
+                            >
+
+                        </div>
+
+
+                        <div class="admin-form-group">
+
+                            <label for="demo_time">
+                                Demo Time
+                            </label>
+
+                            <input
+                                type="time"
+                                id="demo_time"
+                                name="demo_time"
+                                value="{{ enquiry.demo_time_display }}"
+                            >
+
+                        </div>
+
+
+                    </div>
+
+
+                    <!-- SAVE -->
+
+                    <button
+                        type="submit"
+                        class="admin-primary-button"
+                    >
+
+                        <i class="fa-solid fa-floppy-disk"></i>
+
+                        &nbsp;
+
+                        Save Assignment & Schedule
+
+                    </button>
+
+
+                </form>
+
+
+                <!-- ASSIGNED TEACHER -->
+
+                {% if enquiry.assigned_teacher %}
+
+                    <div class="admin-assignment-box">
+
+                        <strong>
+                            Assigned Teacher
+                        </strong>
+
+                        <span>
+                            {{ enquiry.assigned_teacher }}
+                        </span>
+
+
+                        {% if enquiry.teacher_email %}
+
+                            <small>
+                                {{ enquiry.teacher_email }}
+                            </small>
+
+                        {% endif %}
+
+                    </div>
+
+                {% endif %}
+
+
+            </div>
+
+
+        </section>
+
+
+        <!-- ====================================================
+             CONVERT TO STUDENT
+             ==================================================== -->
+
+        <section
+            class="admin-card"
+            style="margin-top:20px;"
+        >
+
+            <div class="admin-card-header">
+
+                <div>
+
+                    <span class="admin-card-kicker">
+                        Student
+                    </span>
+
+                    <h2>
+                        Convert Enquiry
+                    </h2>
+
+                </div>
+
+            </div>
+
+
+            <p
+                style="
+                    color:var(--admin-muted);
+                    margin-top:0;
+                    line-height:1.7;
+                    font-size:13px;
+                "
+            >
+
+                Once the demo is completed or the person
+                is enrolled, you can create the student
+                record from this enquiry.
+
+            </p>
+
+
+            {% if converted_student %}
+
+
+                <a
+                    href="{{
+                        url_for(
+                            'student_details',
+                            student_id=converted_student.id
+                        )
+                    }}"
+                    class="admin-primary-button"
+                >
+
+                    <i class="fa-solid fa-user-graduate"></i>
+
+                    &nbsp;
+
+                    View Student
+                    {{ converted_student.student_code }}
+
+                </a>
+
+
+            {% elif enquiry.status in [
+                'DEMO_COMPLETED',
+                'ENROLLED'
+            ] %}
+
+
+                <form
+                    method="POST"
+                    action="{{
+                        url_for(
+                            'convert_enquiry_to_student',
+                            enquiry_id=enquiry.id
+                        )
+                    }}"
+                    onsubmit="
+                        return confirm(
+                            'Convert this enquiry into a student?'
+                        );
+                    "
+                >
+
+                    <button
+                        type="submit"
+                        class="admin-primary-button"
+                    >
+
+                        <i class="fa-solid fa-user-plus"></i>
+
+                        &nbsp;
+
+                        Convert to Student
+
+                    </button>
+
+                </form>
+
+
+            {% else %}
+
+
+                <button
+                    type="button"
+                    class="admin-secondary-button"
+                    disabled
+                >
+
+                    Complete Demo First
+
+                </button>
+
+
+            {% endif %}
+
+
+        </section>
+
+
+    </main>
+
+
+</body>
+
+</html>

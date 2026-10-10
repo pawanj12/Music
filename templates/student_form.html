@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>
+        {% if student %}
+        Edit Student
+        {% else %}
+        Add Student
+        {% endif %}
+        — Minerva Admin
+    </title>
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+
+</head>
+
+<body>
+
+    <div class="admin-layout">
+
+        {% set active_page = "students" %}
+        {% include "admin_sidebar.html" %}
+
+        <main class="admin-main">
+
+            <div class="admin-topbar">
+
+                <div>
+
+                    <h1>
+                        {% if student %}
+                        Edit Student
+                        {% else %}
+                        Add Student
+                        {% endif %}
+                    </h1>
+
+                    <p>
+                        {% if student %}
+                        Update student information.
+                        {% else %}
+                        Create a new student profile.
+                        {% endif %}
+                    </p>
+
+                </div>
+
+                <div class="admin-topbar-actions">
+
+                    <button id="adminThemeToggle" class="admin-theme-toggle" type="button">
+                        Theme
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <section class="admin-card student-form-card">
+
+                {% if error %}
+
+                <div class="admin-form-error">
+                    {{ error }}
+                </div>
+
+                {% endif %}
+
+
+                <form method="POST">
+
+                    {% if student %}
+
+                    <div class="student-code-display">
+
+                        <span>Student Code</span>
+
+                        <strong>
+                            {{ student.student_code }}
+                        </strong>
+
+                    </div>
+
+                    {% endif %}
+
+
+                    <div class="admin-form-grid">
+
+                        <div class="admin-form-group">
+
+                            <label>
+                                Full Name *
+                            </label>
+
+                            <input type="text" name="full_name" required
+                                value="{{ student.full_name if student else '' }}" placeholder="Student full name">
+
+                        </div>
+
+
+                        <div class="admin-form-group">
+
+                            <label>
+                                Phone
+                            </label>
+
+                            <input type="text" name="phone" value="{{ student.phone if student else '' }}"
+                                placeholder="+91...">
+
+                        </div>
+
+
+                        <div class="admin-form-group">
+
+                            <label>
+                                Email
+                            </label>
+
+                            <input type="email" name="email" value="{{ student.email if student else '' }}"
+                                placeholder="student@email.com">
+
+                        </div>
+
+
+                        <div class="admin-form-group">
+
+                            <label>
+                                Age
+                            </label>
+
+                            <input type="number" name="age" min="1" max="100"
+                                value="{{ student.age if student else '' }}" placeholder="Age">
+
+                        </div>
+
+
+                        <div class="admin-form-group">
+
+                            <label>
+                                Instrument
+                            </label>
+
+                            <select name="instrument">
+
+                                <option value="">
+                                    Select instrument
+                                </option>
+
+                                {% for item in [
+                                "Guitar",
+                                "Piano & Keyboard",
+                                "Tabla",
+                                "Vocals",
+                                "Violin",
+                                "Other"
+                                ] %}
+
+                                <option value="{{ item }}" {% if student and student.instrument==item %} selected {%
+                                    endif %}>
+                                    {{ item }}
+                                </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="admin-form-group">
+
+                            <label>
+                                Teacher
+                            </label>
+
+                            <select name="teacher_id">
+
+                                <option value="">
+                                    Not assigned
+                                </option>
+
+                                {% for teacher in teachers %}
+
+                                <option value="{{ teacher.id }}" {% if student and student.teacher_id==teacher.id %}
+                                    selected {% endif %}>
+                                    {{ teacher.full_name }}
+                                </option>
+
+                                {% endfor %}
+
+                            </select>
+
+                        </div>
+
+
+                        <div class="admin-form-group">
+
+                            <label>
+                                Enrollment Date
+                            </label>
+
+                            <input type="date" name="enrollment_date"
+                                value="{{ student.enrollment_date if student and student.enrollment_date else '' }}">
+
+                        </div>
+
+
+                        <div class="admin-form-group">
+
+                            <label>
+                                Status
+                            </label>
+
+                            <select name="status">
+
+                                <option value="ACTIVE" {% if not student or student.status=="ACTIVE" %} selected {%
+                                    endif %}>
+                                    Active
+                                </option>
+
+                                <option value="INACTIVE" {% if student and student.status=="INACTIVE" %} selected {%
+                                    endif %}>
+                                    Inactive
+                                </option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+
+                    <div class="admin-form-group">
+
+                        <label>
+                            Notes
+                        </label>
+
+                        <textarea name="notes" rows="6"
+                            placeholder="Additional student information...">{{ student.notes if student else '' }}</textarea>
+
+                    </div>
+
+
+                    <div class="student-form-actions">
+
+                        <a href="{{ url_for('admin_students') }}" class="admin-secondary-button">
+                            Cancel
+                        </a>
+
+                        <button type="submit" class="admin-primary-button">
+                            {% if student %}
+                            Update Student
+                            {% else %}
+                            Create Student
+                            {% endif %}
+                        </button>
+
+                    </div>
+
+                </form>
+
+            </section>
+
+        </main>
+
+    </div>
+
+
+    <script src="{{ url_for('static', filename='javascript/admin.js') }}"></script>
+
+</body>
+
+</html>

@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Contact — Minerva Music Institute</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&display=swap"
+    rel="stylesheet">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/nav.css') }}">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/footer.css') }}">
+
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/contact.css') }}">
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.2/css/all.min.css">
+
+  <style>
+    /* ======================================================
+       FORM NOTIFICATIONS
+       ====================================================== */
+
+    .form-notification {
+      width: 100%;
+      margin-bottom: 22px;
+      padding: 18px 20px;
+      border-radius: 16px;
+      border: 1px solid;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      animation: notificationIn 0.45s ease;
+    }
+
+    .form-notification.success {
+      background: #f1f9e8;
+      border-color: #b7d98c;
+      color: #274014;
+    }
+
+    .form-notification.error {
+      background: #fff1ed;
+      border-color: #ffb4a2;
+      color: #6b2010;
+    }
+
+    .notification-icon {
+      width: 34px;
+      height: 34px;
+      min-width: 34px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+    }
+
+    .success .notification-icon {
+      background: #d8efb7;
+    }
+
+    .error .notification-icon {
+      background: #ffd1c6;
+    }
+
+    .notification-content strong {
+      display: block;
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 16px;
+      margin-bottom: 3px;
+    }
+
+    .notification-content span {
+      display: block;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .demo-id-box {
+      display: inline-block;
+      margin-top: 8px;
+      padding: 6px 10px;
+      border-radius: 8px;
+      background: rgba(255, 255, 255, 0.65);
+      border: 1px dashed currentColor;
+      font-family: monospace;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+    }
+
+    @keyframes notificationIn {
+      from {
+        opacity: 0;
+        transform: translateY(-12px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+  </style>
+
+</head>
+
+
+<body>
+
+  <div class="bg-blob b1"></div>
+  <div class="bg-blob b2"></div>
+  <div class="bg-blob b3"></div>
+
+
+  <!-- ======================================================
+       SHARED NAVIGATION
+       ====================================================== -->
+
+  <div id="site-header" data-active="contact" data-cta-href="/contact#form">
+  </div>
+
+
+  <!-- ======================================================
+       HERO
+       ====================================================== -->
+
+  <section class="mini-hero">
+
+    <div class="wrap">
+
+      <div class="pill">
+        <span class="dot2"></span>
+        We usually reply within a day
+      </div>
+
+      <h1>
+        Let's talk about your first class
+      </h1>
+
+      <p>
+        Fill the form, call us, or just drop a WhatsApp message —
+        whichever's easiest for you.
+      </p>
+
+    </div>
+
+  </section>
+
+
+  <!-- ======================================================
+       CONTACT
+       ====================================================== -->
+
+  <section class="contact-section">
+
+    <div class="wrap">
+
+      <div class="contact-grid">
+
+
+        <!-- ==================================================
+             FORM CARD
+             ================================================== -->
+
+        <div class="form-card" id="form">
+
+          <h2>
+            Send an enquiry
+          </h2>
+
+          <p class="sub">
+            Tell us a little about what you're looking for,
+            and a teacher will call you back.
+          </p>
+
+
+          <!-- ==================================================
+               SUCCESS NOTIFICATION
+               ================================================== -->
+
+          {% if submitted %}
+
+          <div class="form-notification success">
+
+            <div class="notification-icon">
+              ✓
+            </div>
+
+            <div class="notification-content">
+
+              <strong>
+                Enquiry submitted successfully!
+              </strong>
+
+              <span>
+                Thank you. Our team will contact you shortly.
+              </span>
+
+              {% if demo_id %}
+
+              <span class="demo-id-box">
+                Demo ID: {{ demo_id }}
+              </span>
+
+              {% endif %}
+
+            </div>
+
+          </div>
+
+          {% endif %}
+
+
+          <!-- ==================================================
+               ERROR NOTIFICATION
+               ================================================== -->
+
+          {% if error %}
+
+          <div class="form-notification error">
+
+            <div class="notification-icon">
+              !
+            </div>
+
+            <div class="notification-content">
+
+              <strong>
+                Something went wrong
+              </strong>
+
+              <span>
+                {{ error }}
+              </span>
+
+            </div>
+
+          </div>
+
+          {% endif %}
+
+
+          <!-- ==================================================
+               FORM
+               ================================================== -->
+
+          <form action="{{ url_for('submit_enquiry') }}" method="POST">
+
+
+            <!-- FULL NAME + PHONE -->
+
+            <div class="field-row">
+
+              <div class="field">
+
+                <label for="full_name">
+                  Full name
+                </label>
+
+                <input id="full_name" type="text" name="full_name" placeholder="Your name" autocomplete="name" required>
+
+              </div>
+
+
+              <div class="field">
+
+                <label for="phone">
+                  Phone number
+                </label>
+
+                <input id="phone" type="tel" name="phone" placeholder="+91 98XXX XXXXX" autocomplete="tel" required>
+
+              </div>
+
+            </div>
+
+
+            <!-- EMAIL + INSTRUMENT -->
+
+            <div class="field-row">
+
+              <div class="field">
+
+                <label for="email">
+                  Email
+                </label>
+
+                <input id="email" type="email" name="email" placeholder="you@email.com" autocomplete="email" required>
+
+              </div>
+
+
+              <div class="field">
+
+                <label for="instrument">
+                  Instrument interested in
+                </label>
+
+                <select id="instrument" name="instrument" required>
+
+                  <option value="">
+                    Select an instrument
+                  </option>
+
+                  <option value="Guitar">
+                    Guitar
+                  </option>
+
+                  <option value="Piano & Keyboard">
+                    Piano & Keyboard
+                  </option>
+
+                  <option value="Tabla">
+                    Tabla
+                  </option>
+
+                  <option value="Vocals">
+                    Vocals
+                  </option>
+
+                  <option value="Violin">
+                    Violin
+                  </option>
+
+                  <option value="Not sure yet">
+                    Not sure yet
+                  </option>
+
+                </select>
+
+              </div>
+
+            </div>
+
+
+            <!-- AGE + TIME -->
+
+            <div class="field-row">
+
+              <div class="field">
+
+                <label for="age">
+                  Age (yours or your child's)
+                </label>
+
+                <input id="age" type="number" name="age" min="3" max="100" placeholder="e.g. 12 or 34">
+
+              </div>
+
+
+              <div class="field">
+
+                <label for="preferred_time">
+                  Preferred time slot
+                </label>
+
+                <select id="preferred_time" name="preferred_time">
+
+                  <option value="Any time">
+                    Any time
+                  </option>
+
+                  <option value="Morning (10am-1pm)">
+                    Morning (10am–1pm)
+                  </option>
+
+                  <option value="Afternoon (1pm-4pm)">
+                    Afternoon (1pm–4pm)
+                  </option>
+
+                  <option value="Evening (4pm-7pm)">
+                    Evening (4pm–7pm)
+                  </option>
+
+                </select>
+
+              </div>
+
+            </div>
+
+
+            <!-- MESSAGE -->
+
+            <div class="field">
+
+              <label for="message">
+                Anything else we should know?
+              </label>
+
+              <textarea id="message" name="message"
+                placeholder="Prior experience, specific goals, questions..."></textarea>
+
+            </div>
+
+
+            <!-- SUBMIT -->
+
+            <button type="submit" class="btn btn-primary btn-block">
+
+              Request a free demo class
+
+            </button>
+
+
+            <p class="form-note">
+
+              We'll call or WhatsApp you back within a day —
+              no spam, no auto-emails.
+
+            </p>
+
+          </form>
+
+        </div>
+
+
+        <!-- ==================================================
+             INFORMATION
+             ================================================== -->
+
+        <div class="info-stack">
+
+
+          <div class="info-card">
+
+            <h3>
+              Contact details
+            </h3>
+
+
+            <div class="info-line">
+
+              <div class="ic">
+
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+
+                  <path
+                    d="M6 4h3l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v3a2 2 0 0 1-2 2C10.5 20 4 13.5 4 6a2 2 0 0 1 2-2Z"
+                    stroke="#4B3AA4" stroke-width="1.5" />
+
+                </svg>
+
+              </div>
+
+              <div class="txt">
+
+                <strong>
+                  +91 98XXX XXXXX
+                </strong>
+
+                <span>
+                  Call or WhatsApp, 10am–7pm
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <div class="info-line">
+
+              <div class="ic">
+
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+
+                  <path d="M4 6h16v12H4z" stroke="#4B3AA4" stroke-width="1.5" />
+
+                  <path d="M4 7l8 6 8-6" stroke="#4B3AA4" stroke-width="1.5" />
+
+                </svg>
+
+              </div>
+
+              <div class="txt">
+
+                <strong>
+                  Minvervamusicinsitute@gmail.com
+                </strong>
+
+                <span>
+                  We reply within a day
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <div class="info-line">
+
+              <div class="ic">
+
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+
+                  <path d="M12 21s7-6.3 7-11.5A7 7 0 0 0 5 9.5C5 14.7 12 21 12 21Z" stroke="#4B3AA4"
+                    stroke-width="1.5" />
+
+                  <circle cx="12" cy="9.5" r="2.4" stroke="#4B3AA4" stroke-width="1.5" />
+
+                </svg>
+
+              </div>
+
+              <div class="txt">
+
+                <strong>
+                  Your institute address, Line 1
+                </strong>
+
+                <span>
+                  Area, City — PIN code
+                </span>
+
+              </div>
+
+            </div>
+
+
+            <div class="map-embed">
+
+              <iframe src="https://maps.google.com/maps?q=New+Delhi&t=&z=12&ie=UTF8&iwloc=&output=embed" loading="lazy"
+                title="Institute location">
+              </iframe>
+
+            </div>
+
+          </div>
+
+
+          <!-- CLASS TIMINGS -->
+
+          <div class="info-card">
+
+            <h3>
+              Class timings
+            </h3>
+
+            <div class="timing-row">
+              <span class="day">
+                Mon – Sat
+              </span>
+
+              <span class="hrs">
+                10:00 AM – 7:00 PM
+              </span>
+            </div>
+
+            <div class="timing-row">
+              <span class="day">
+                Sunday
+              </span>
+
+              <span class="hrs">
+                Closed
+              </span>
+            </div>
+
+          </div>
+
+
+          <!-- SOCIAL -->
+
+          <div class="info-card">
+
+            <h3>
+              Follow along
+            </h3>
+
+            <div class="social-row">
+
+              <a class="social-icon" href="#" aria-label="Instagram">
+
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+
+                  <rect x="4" y="4" width="16" height="16" rx="5" stroke="#4B3AA4" stroke-width="1.5" />
+
+                  <circle cx="12" cy="12" r="3.4" stroke="#4B3AA4" stroke-width="1.5" />
+
+                  <circle cx="17" cy="7" r="1" fill="#4B3AA4" />
+
+                </svg>
+
+              </a>
+
+
+              <a class="social-icon" href="#" aria-label="YouTube">
+
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+
+                  <rect x="3" y="6" width="18" height="12" rx="3" stroke="#4B3AA4" stroke-width="1.5" />
+
+                  <path d="M10 9.5l5 2.5-5 2.5z" fill="#4B3AA4" />
+
+                </svg>
+
+              </a>
+
+
+              <a class="social-icon" href="#" aria-label="WhatsApp">
+
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+
+                  <path
+                    d="M6 4h3l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v3a2 2 0 0 1-2 2C10.5 20 4 13.5 4 6a2 2 0 0 1 2-2Z"
+                    stroke="#4B3AA4" stroke-width="1.5" />
+
+                </svg>
+
+              </a>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ======================================================
+       FAQ
+       ====================================================== -->
+
+  <section class="faq-section">
+
+    <div class="dot-grid"></div>
+
+    <div class="wrap">
+
+      <div class="faq-head">
+
+        <h2>
+          Before you visit
+        </h2>
+
+        <p>
+          A few things people usually ask before their first class.
+        </p>
+
+      </div>
+
+
+      <div class="faq-list">
+
+
+        <div class="faq-item">
+
+          <div class="q">
+            Can I just walk in, or do I need an appointment?
+          </div>
+
+          <div class="a">
+            Walk-ins are welcome for a quick chat, but the demo
+            class itself needs a slot booked in advance so a teacher
+            is free for you.
+          </div>
+
+        </div>
+
+
+        <div class="faq-item">
+
+          <div class="q">
+            Is parking available?
+          </div>
+
+          <div class="a">
+            Yes, there's two-wheeler and car parking right outside
+            the building.
+          </div>
+
+        </div>
+
+
+        <div class="faq-item">
+
+          <div class="q">
+            Do I need to bring my own instrument?
+          </div>
+
+          <div class="a">
+            No — for the demo class, everything is provided.
+            Once you enrol, we'll guide you on what to buy based
+            on your level.
+          </div>
+
+        </div>
+
+
+        <div class="faq-item">
+
+          <div class="q">
+            Is the demo class really free?
+          </div>
+
+          <div class="a">
+            Yes, no cost and no obligation to continue after.
+          </div>
+
+        </div>
+
+
+      </div>
+
+    </div>
+
+  </section>
+
+
+  <!-- ======================================================
+       WHATSAPP FLOAT
+       ====================================================== -->
+
+  <a class="wa-float" href="#" aria-label="Chat on WhatsApp">
+
+    <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+
+      <path d="M6 4h3l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v3a2 2 0 0 1-2 2C10.5 20 4 13.5 4 6a2 2 0 0 1 2-2Z"
+        stroke="#fff" stroke-width="1.6" />
+
+    </svg>
+
+  </a>
+
+
+  <!-- ======================================================
+       JAVASCRIPT
+       ====================================================== -->
+
+  <script src="{{ url_for('static', filename='javascript/nav.js') }}"></script>
+
+  <script src="{{ url_for('static', filename='javascript/footer.js') }}"></script>
+
+
+</body>
+
+</html>

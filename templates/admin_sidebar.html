@@ -1,0 +1,554 @@
+<!-- ============================================================
+     MINERVA MUSIC INSTITUTE
+     SHARED ADMIN SIDEBAR
+     ============================================================ -->
+
+<aside class="admin-sidebar" id="adminSidebar">
+
+    <!-- BRAND -->
+    <div class="admin-sidebar-brand">
+        <a
+            href="{{ url_for('admin_dashboard') }}"
+            class="admin-brand-link"
+        >
+            <span class="admin-brand-dot"></span>
+
+            <span class="admin-brand-text">
+                Minerva
+                <small>ADMINISTRATION</small>
+            </span>
+        </a>
+    </div>
+
+
+    <!-- LOGGED-IN USER -->
+    <div class="admin-sidebar-user">
+        <strong>
+            {{ user_name or session.get('user_name', 'Admin') }}
+        </strong>
+
+        <small>
+            {{ role or session.get('role', '') }}
+        </small>
+    </div>
+
+
+    <!-- ========================================================
+         NAVIGATION
+         ======================================================== -->
+
+    <nav class="admin-nav" aria-label="Admin navigation">
+
+
+        <!-- ====================================================
+             DASHBOARD
+             ==================================================== -->
+
+        <a
+            href="{{ url_for('admin_dashboard') }}"
+            class="admin-nav-item
+            {% if active_page == 'dashboard' %}
+                active
+            {% endif %}"
+        >
+            <span class="admin-nav-icon">📊</span>
+            <span>Dashboard</span>
+        </a>
+
+
+        <!-- ====================================================
+             ENQUIRIES DROPDOWN
+             ==================================================== -->
+
+        <div
+            class="admin-nav-group
+            {% if active_page in [
+                'enquiries',
+                'enquiry_details',
+                'new_pending',
+                'converted_students',
+                'converted_teachers',
+                'courses_enquiries',
+                'attendance_enquiries',
+                'payment_followups',
+                'cms_leads',
+                'more_filters'
+            ] %}
+                open
+            {% endif %}"
+        >
+
+            <button
+                type="button"
+                class="admin-nav-item admin-nav-dropdown-toggle
+                {% if active_page in [
+                    'enquiries',
+                    'enquiry_details',
+                    'new_pending',
+                    'converted_students',
+                    'converted_teachers',
+                    'courses_enquiries',
+                    'attendance_enquiries',
+                    'payment_followups',
+                    'cms_leads',
+                    'more_filters'
+                ] %}
+                    active
+                {% endif %}"
+                data-admin-dropdown="enquiriesDropdown"
+                aria-expanded="
+                    {% if active_page in [
+                        'enquiries',
+                        'enquiry_details',
+                        'new_pending',
+                        'converted_students',
+                        'converted_teachers',
+                        'courses_enquiries',
+                        'attendance_enquiries',
+                        'payment_followups',
+                        'cms_leads',
+                        'more_filters'
+                    ] %}
+                        true
+                    {% else %}
+                        false
+                    {% endif %}
+                "
+            >
+
+                <span class="admin-nav-left">
+                    <span class="admin-nav-icon">📩</span>
+                    <span>Enquiries</span>
+                </span>
+
+                <span class="admin-dropdown-arrow">
+                    ▾
+                </span>
+
+            </button>
+
+
+            <div
+                class="admin-submenu"
+                id="enquiriesDropdown"
+            >
+
+                <!-- ALL ENQUIRIES -->
+
+                <a
+                    href="{{ url_for('admin_enquiries') }}"
+                    class="admin-subnav-item
+                    {% if active_page in ['enquiries', 'enquiry_details'] %}
+                        active
+                    {% endif %}"
+                >
+                    <span>All Enquiries</span>
+                </a>
+
+
+                <!-- NEW / PENDING -->
+
+                <a
+                    href="{{ url_for('admin_enquiries') }}?status=NEW"
+                    class="admin-subnav-item
+                    {% if active_page == 'new_pending' %}
+                        active
+                    {% endif %}"
+                >
+                    <span>New / Pending</span>
+                </a>
+
+
+                <!-- CONVERTED STUDENTS -->
+
+                <a
+                    href="{{ url_for('admin_students') }}?source=enquiry"
+                    class="admin-subnav-item
+                    {% if active_page == 'converted_students' %}
+                        active
+                    {% endif %}"
+                >
+                    <span>Converted Students</span>
+                </a>
+
+
+                <!-- CONVERTED TEACHERS -->
+
+                <a
+                    href="{{ url_for('admin_teachers') }}?source=enquiry"
+                    class="admin-subnav-item
+                    {% if active_page == 'converted_teachers' %}
+                        active
+                    {% endif %}"
+                >
+                    <span>Teachers</span>
+                </a>
+
+
+                <!-- COURSES ENQUIRIES -->
+
+                <a
+                    href="{{ url_for('admin_enquiries') }}?category=courses"
+                    class="admin-subnav-item
+                    {% if active_page == 'courses_enquiries' %}
+                        active
+                    {% endif %}"
+                >
+                    <span>Courses Enquiries</span>
+                </a>
+
+
+                <!-- ATTENDANCE ENQUIRIES -->
+
+                <a
+                    href="{{ url_for('admin_enquiries') }}?category=attendance"
+                    class="admin-subnav-item
+                    {% if active_page == 'attendance_enquiries' %}
+                        active
+                    {% endif %}"
+                >
+                    <span>Attendance Enquiries</span>
+                </a>
+
+
+                <!-- PAYMENTS / FOLLOW-UPS -->
+
+                <a
+                    href="{{ url_for('admin_enquiries') }}?category=payments"
+                    class="admin-subnav-item
+                    {% if active_page == 'payment_followups' %}
+                        active
+                    {% endif %}"
+                >
+                    <span>Payments / Follow-ups</span>
+                </a>
+
+
+                <!-- WEBSITE CMS LEADS -->
+
+                <a
+                    href="{{ url_for('admin_enquiries') }}?category=cms"
+                    class="admin-subnav-item
+                    {% if active_page == 'cms_leads' %}
+                        active
+                    {% endif %}"
+                >
+                    <span>Website CMS Leads</span>
+                </a>
+
+
+                <!-- MORE FILTERS -->
+
+                <a
+                    href="{{ url_for('admin_enquiries') }}?filters=more"
+                    class="admin-subnav-item
+                    {% if active_page == 'more_filters' %}
+                        active
+                    {% endif %}"
+                >
+                    <span>+ Many More Filters</span>
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- ====================================================
+             DEMO CLASSES
+             ==================================================== -->
+
+        <a
+            href="#"
+            class="admin-nav-item
+            {% if active_page == 'demo_classes' %}
+                active
+            {% endif %}"
+        >
+            <span class="admin-nav-icon">🎵</span>
+            <span>Demo Classes</span>
+        </a>
+
+
+        <!-- ====================================================
+             APPOINTMENTS
+             ==================================================== -->
+
+        <a
+            href="#"
+            class="admin-nav-item
+            {% if active_page == 'appointments' %}
+                active
+            {% endif %}"
+        >
+            <span class="admin-nav-icon">📅</span>
+            <span>Appointments</span>
+        </a>
+
+
+        <!-- ====================================================
+             STUDENTS
+             ==================================================== -->
+
+        <a
+            href="{{ url_for('admin_students') }}"
+            class="admin-nav-item
+            {% if active_page == 'students' %}
+                active
+            {% endif %}"
+        >
+            <span class="admin-nav-icon">🎓</span>
+            <span>Students</span>
+        </a>
+
+
+        <!-- ====================================================
+             TEACHERS
+             ==================================================== -->
+
+        <a
+            href="{{ url_for('admin_teachers') }}"
+            class="admin-nav-item
+            {% if active_page == 'teachers' %}
+                active
+            {% endif %}"
+        >
+            <span class="admin-nav-icon">👨‍🏫</span>
+            <span>Teachers</span>
+        </a>
+
+
+        <!-- ====================================================
+             EMPLOYEES
+             ==================================================== -->
+
+        <a
+            href="#"
+            class="admin-nav-item
+            {% if active_page == 'employees' %}
+                active
+            {% endif %}"
+        >
+            <span class="admin-nav-icon">👥</span>
+            <span>Employees</span>
+        </a>
+
+
+        <!-- ====================================================
+             COURSES
+             ==================================================== -->
+
+        <a
+            href="#"
+            class="admin-nav-item
+            {% if active_page == 'courses' %}
+                active
+            {% endif %}"
+        >
+            <span class="admin-nav-icon">🎼</span>
+            <span>Courses</span>
+        </a>
+
+
+        <!-- ====================================================
+             ATTENDANCE
+             ==================================================== -->
+
+        <a
+            href="#"
+            class="admin-nav-item
+            {% if active_page == 'attendance' %}
+                active
+            {% endif %}"
+        >
+            <span class="admin-nav-icon">✅</span>
+            <span>Attendance</span>
+        </a>
+
+
+        <!-- ====================================================
+             PAYMENTS
+             ==================================================== -->
+
+        <a
+            href="#"
+            class="admin-nav-item
+            {% if active_page == 'payments' %}
+                active
+            {% endif %}"
+        >
+            <span class="admin-nav-icon">💳</span>
+            <span>Payments / Invoices</span>
+        </a>
+
+
+        <!-- ====================================================
+             WEBSITE CMS DROPDOWN
+             ==================================================== -->
+
+        <div
+            class="admin-nav-group
+            {% if active_page in [
+                'cms',
+                'banners',
+                'testimonials',
+                'media'
+            ] %}
+                open
+            {% endif %}"
+        >
+
+            <button
+                type="button"
+                class="admin-nav-item admin-nav-dropdown-toggle"
+                data-admin-dropdown="cmsDropdown"
+                aria-expanded="false"
+            >
+
+                <span class="admin-nav-left">
+                    <span class="admin-nav-icon">🌐</span>
+                    <span>Website CMS</span>
+                </span>
+
+                <span class="admin-dropdown-arrow">
+                    ▾
+                </span>
+
+            </button>
+
+
+            <div
+                class="admin-submenu"
+                id="cmsDropdown"
+            >
+
+                <a
+                    href="#"
+                    class="admin-subnav-item"
+                >
+                    Banners
+                </a>
+
+                <a
+                    href="#"
+                    class="admin-subnav-item"
+                >
+                    Testimonials
+                </a>
+
+                <a
+                    href="#"
+                    class="admin-subnav-item"
+                >
+                    Gallery
+                </a>
+
+                <a
+                    href="#"
+                    class="admin-subnav-item"
+                >
+                    Media Library
+                </a>
+
+            </div>
+
+        </div>
+
+
+        <!-- ====================================================
+             REPORTS / MORE
+             ==================================================== -->
+
+        <div class="admin-nav-group">
+
+            <button
+                type="button"
+                class="admin-nav-item admin-nav-dropdown-toggle"
+                data-admin-dropdown="moreAdminDropdown"
+                aria-expanded="false"
+            >
+
+                <span class="admin-nav-left">
+                    <span class="admin-nav-icon">📈</span>
+                    <span>Reports & More</span>
+                </span>
+
+                <span class="admin-dropdown-arrow">
+                    ▾
+                </span>
+
+            </button>
+
+
+            <div
+                class="admin-submenu"
+                id="moreAdminDropdown"
+            >
+
+                <a href="#" class="admin-subnav-item">
+                    Reports
+                </a>
+
+                <a href="#" class="admin-subnav-item">
+                    Notifications
+                </a>
+
+                <a href="#" class="admin-subnav-item">
+                    Activity Logs
+                </a>
+
+                <a href="#" class="admin-subnav-item">
+                    Settings
+                </a>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+
+    <!-- ========================================================
+         BOTTOM
+         ======================================================== -->
+
+    <div class="admin-sidebar-bottom">
+
+        <!-- THEME -->
+
+        <button
+            type="button"
+            class="admin-theme-toggle"
+            id="adminThemeToggle"
+        >
+            <span class="admin-theme-icon">
+                ◐
+            </span>
+
+            <span>
+                Theme
+            </span>
+        </button>
+
+
+        <!-- LOGOUT -->
+
+        <a
+            href="{{ url_for('logout') }}"
+            class="admin-nav-item admin-logout-item"
+        >
+            <span class="admin-nav-icon">↪</span>
+            <span>Logout</span>
+        </a>
+
+    </div>
+
+</aside>
+
+
+<!-- MOBILE OVERLAY -->
+
+<div
+    class="admin-sidebar-overlay"
+    id="adminSidebarOverlay"
+></div>

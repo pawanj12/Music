@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Teachers — Minerva Admin</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Inter, Arial, sans-serif;
+            background: #f5f5f5;
+            color: #111;
+        }
+
+        .page {
+            min-height: 100vh;
+        }
+
+        .topbar {
+            height: 70px;
+            background: #111;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px;
+        }
+
+        .brand {
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .top-right {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+        .role {
+            font-size: 13px;
+            opacity: .7;
+        }
+
+        .logout {
+            color: #fff;
+            text-decoration: none;
+            border: 1px solid #444;
+            padding: 9px 14px;
+            border-radius: 8px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 35px 25px;
+        }
+
+        .heading {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .heading h1 {
+            margin: 0 0 7px;
+            font-size: 30px;
+        }
+
+        .heading p {
+            margin: 0;
+            color: #666;
+        }
+
+        .add-btn {
+            display: inline-block;
+            background: #111;
+            color: #fff;
+            text-decoration: none;
+            padding: 13px 18px;
+            border-radius: 9px;
+            font-weight: 600;
+        }
+
+        .filters {
+            background: #fff;
+            padding: 18px;
+            border-radius: 14px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            border: 1px solid #e5e5e5;
+        }
+
+        .filters input,
+        .filters select {
+            height: 44px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            padding: 0 13px;
+            font-size: 14px;
+            background: #fff;
+        }
+
+        .search {
+            flex: 1;
+            min-width: 230px;
+        }
+
+        .filter-btn {
+            height: 44px;
+            padding: 0 18px;
+            border: 0;
+            border-radius: 8px;
+            background: #111;
+            color: #fff;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .table-card {
+            background: #fff;
+            border: 1px solid #e5e5e5;
+            border-radius: 14px;
+            overflow: hidden;
+        }
+
+        .table-wrap {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 900px;
+        }
+
+        th,
+        td {
+            padding: 16px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+            font-size: 14px;
+        }
+
+        th {
+            background: #fafafa;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: .5px;
+            color: #666;
+        }
+
+        tr:last-child td {
+            border-bottom: 0;
+        }
+
+        .teacher-name {
+            font-weight: 700;
+        }
+
+        .email {
+            color: #666;
+        }
+
+        .status {
+            display: inline-flex;
+            padding: 6px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .active {
+            background: #e8f7ed;
+            color: #176b35;
+        }
+
+        .inactive {
+            background: #eee;
+            color: #666;
+        }
+
+        .actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .action-btn {
+            text-decoration: none;
+            border: 1px solid #ddd;
+            color: #111;
+            padding: 8px 11px;
+            border-radius: 7px;
+            font-size: 13px;
+            background: #fff;
+            cursor: pointer;
+        }
+
+        .action-btn:hover {
+            border-color: #111;
+        }
+
+        .empty {
+            padding: 60px 20px;
+            text-align: center;
+            color: #777;
+        }
+
+        @media (max-width: 700px) {
+
+            .topbar {
+                padding: 0 16px;
+            }
+
+            .role {
+                display: none;
+            }
+
+            .container {
+                padding: 25px 15px;
+            }
+
+            .heading {
+                align-items: flex-start;
+                flex-direction: column;
+            }
+
+            .add-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="page">
+
+        <header class="topbar">
+
+            <div class="brand">
+                Minerva Admin
+            </div>
+
+            <div class="top-right">
+
+                <span class="role">
+                    {{ user_name }} · {{ role }}
+                </span>
+
+                <a href="{{ url_for('logout') }}" class="logout">
+                    Logout
+                </a>
+
+            </div>
+
+        </header>
+
+
+        <main class="container">
+
+            <div class="heading">
+
+                <div>
+                    <h1>Teacher Management</h1>
+
+                    <p>
+                        Manage teachers, profiles and account status.
+                    </p>
+                </div>
+
+                <a href="{{ url_for('add_teacher') }}" class="add-btn">
+                    + Add New Teacher
+                </a>
+
+            </div>
+
+
+            <form method="GET" action="{{ url_for('admin_teachers') }}" class="filters">
+
+                <input class="search" type="text" name="q" value="{{ search }}"
+                    placeholder="Search name, email, phone or instrument...">
+
+                <select name="status">
+
+                    <option value="all" {% if status=="all" %}selected{% endif %}>
+                        All Teachers
+                    </option>
+
+                    <option value="active" {% if status=="active" %}selected{% endif %}>
+                        Active
+                    </option>
+
+                    <option value="inactive" {% if status=="inactive" %}selected{% endif %}>
+                        Inactive
+                    </option>
+
+                </select>
+
+                <button type="submit" class="filter-btn">
+                    Search
+                </button>
+
+            </form>
+
+
+            <div class="table-card">
+
+                {% if teachers %}
+
+                <div class="table-wrap">
+
+                    <table>
+
+                        <thead>
+
+                            <tr>
+                                <th>Teacher</th>
+                                <th>Contact</th>
+                                <th>Instrument</th>
+                                <th>Experience</th>
+                                <th>Qualification</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            {% for teacher in teachers %}
+
+                            <tr>
+
+                                <td>
+                                    <div class="teacher-name">
+                                        {{ teacher.full_name }}
+                                    </div>
+
+                                    <div class="email">
+                                        {{ teacher.email }}
+                                    </div>
+                                </td>
+
+
+                                <td>
+                                    {{ teacher.phone or "—" }}
+                                </td>
+
+
+                                <td>
+                                    {{ teacher.instrument or "—" }}
+                                </td>
+
+
+                                <td>
+                                    {% if teacher.experience_years %}
+                                    {{ teacher.experience_years }} years
+                                    {% else %}
+                                    —
+                                    {% endif %}
+                                </td>
+
+
+                                <td>
+                                    {{ teacher.qualification or "—" }}
+                                </td>
+
+
+                                <td>
+
+                                    {% if teacher.is_active %}
+
+                                    <span class="status active">
+                                        Active
+                                    </span>
+
+                                    {% else %}
+
+                                    <span class="status inactive">
+                                        Inactive
+                                    </span>
+
+                                    {% endif %}
+
+                                </td>
+
+
+                                <td>
+
+                                    <div class="actions">
+
+                                        <a href="{{ url_for('edit_teacher', teacher_id=teacher.id) }}"
+                                            class="action-btn">
+                                            Edit
+                                        </a>
+
+
+                                        <form method="POST"
+                                            action="{{ url_for('toggle_teacher_status', teacher_id=teacher.id) }}">
+
+                                            <button type="submit" class="action-btn">
+                                                {% if teacher.is_active %}
+                                                Deactivate
+                                                {% else %}
+                                                Activate
+                                                {% endif %}
+                                            </button>
+
+                                        </form>
+
+                                    </div>
+
+                                </td>
+
+                            </tr>
+
+                            {% endfor %}
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                {% else %}
+
+                <div class="empty">
+
+                    <h3>No teachers found</h3>
+
+                    <p>
+                        Add your first teacher to start managing teachers.
+                    </p>
+
+                </div>
+
+                {% endif %}
+
+            </div>
+
+        </main>
+
+    </div>
+
+</body>
+
+</html>

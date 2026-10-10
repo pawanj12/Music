@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teacher Dashboard — Minerva</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <script src="{{ url_for('static', filename='javascript/admin.js') }}" defer></script>
+</head>
+<body>
+
+    <aside class="admin-sidebar" id="teacherSidebar">
+        <div class="admin-sidebar-brand">
+            <a href="{{ url_for('teacher_dashboard') }}" class="admin-brand-link">
+                <span class="admin-brand-dot"></span>
+                <span>Minerva Teacher</span>
+            </a>
+        </div>
+
+        <div class="admin-sidebar-user">
+            <strong>{{ teacher_name }}</strong>
+            <small>TEACHER</small>
+        </div>
+
+        <nav class="admin-nav">
+            <a href="{{ url_for('teacher_dashboard') }}" class="admin-nav-item active">
+                <span>Dashboard</span>
+            </a>
+            <a href="#assigned-demos" class="admin-nav-item">
+                <span>Demo Classes</span>
+            </a>
+            <a href="#assigned-students" class="admin-nav-item">
+                <span>Students</span>
+            </a>
+            <a href="#" class="admin-nav-item">
+                <span>Attendance</span>
+            </a>
+        </nav>
+
+        <div class="admin-sidebar-bottom">
+            <button type="button" class="admin-theme-toggle" id="adminThemeToggle">
+                <span class="admin-theme-icon">◐</span>
+                <span>Theme</span>
+            </button>
+            <a href="{{ url_for('logout') }}" class="admin-nav-item admin-logout-item">
+                <span>Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <div class="admin-sidebar-overlay" id="adminSidebarOverlay"></div>
+
+    <button
+        type="button"
+        id="adminMobileToggle"
+        class="admin-mobile-toggle"
+        aria-label="Open teacher menu"
+    >
+        ☰
+    </button>
+
+    <main class="admin-main">
+        <div class="admin-page-header">
+            <div>
+                <p class="admin-eyebrow">Teacher Portal</p>
+                <h1>Welcome, {{ teacher_name }}</h1>
+                <p>Here are the demo classes and students assigned to you.</p>
+            </div>
+        </div>
+
+        <section class="admin-stats-grid">
+            <div class="admin-stat-card">
+                <span>Total Assigned Demos</span>
+                <strong>{{ assigned_count }}</strong>
+            </div>
+            <div class="admin-stat-card">
+                <span>Completed Demos</span>
+                <strong>{{ completed_count }}</strong>
+            </div>
+            <div class="admin-stat-card">
+                <span>Today's Demos</span>
+                <strong>{{ todays_demos|length }}</strong>
+            </div>
+            <div class="admin-stat-card">
+                <span>Assigned Students</span>
+                <strong>{{ assigned_students|length }}</strong>
+            </div>
+        </section>
+
+        <section class="admin-card" id="assigned-demos">
+            <div class="admin-card-header">
+                <div>
+                    <span class="admin-card-kicker">Today</span>
+                    <h2>Today's Demo Classes</h2>
+                </div>
+            </div>
+
+            {% if todays_demos %}
+                <div class="admin-demo-list">
+                    {% for demo in todays_demos %}
+                        <article class="admin-demo-card">
+                            <div>
+                                <strong>{{ demo.full_name }}</strong>
+                                <span>{{ demo.instrument }}</span>
+                            </div>
+                            <div>
+                                <strong>{{ demo.demo_time_display or 'Time not set' }}</strong>
+                                <span>{{ demo.status|replace('_', ' ') }}</span>
+                            </div>
+                            <div>
+                                <span>{{ demo.phone }}</span>
+                                <span>{{ demo.email }}</span>
+                            </div>
+                        </article>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="admin-empty-state">
+                    No demo class is assigned to you for today.
+                </div>
+            {% endif %}
+        </section>
+
+        <section class="admin-card">
+            <div class="admin-card-header">
+                <div>
+                    <span class="admin-card-kicker">Upcoming</span>
+                    <h2>Upcoming Demo Classes</h2>
+                </div>
+            </div>
+
+            {% if upcoming_demos %}
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Demo ID</th>
+                                <th>Student</th>
+                                <th>Instrument</th>
+                                <th>Date</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for demo in upcoming_demos %}
+                                <tr>
+                                    <td>{{ demo.demo_id }}</td>
+                                    <td>{{ demo.full_name }}</td>
+                                    <td>{{ demo.instrument }}</td>
+                                    <td>{{ demo.demo_date.strftime('%d %b %Y') if demo.demo_date else '—' }}</td>
+                                    <td>{{ demo.demo_time_display or '—' }}</td>
+                                    <td>{{ demo.status|replace('_', ' ') }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="admin-empty-state">
+                    No upcoming demo classes are currently assigned to you.
+                </div>
+            {% endif %}
+        </section>
+
+        <section class="admin-card">
+            <div class="admin-card-header">
+                <div>
+                    <span class="admin-card-kicker">Needs Scheduling</span>
+                    <h2>Unscheduled Assigned Demos</h2>
+                </div>
+            </div>
+
+            {% if unscheduled_demos %}
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Demo ID</th>
+                                <th>Name</th>
+                                <th>Instrument</th>
+                                <th>Preferred Time</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for demo in unscheduled_demos %}
+                                <tr>
+                                    <td>{{ demo.demo_id }}</td>
+                                    <td>{{ demo.full_name }}</td>
+                                    <td>{{ demo.instrument }}</td>
+                                    <td>{{ demo.preferred_time or '—' }}</td>
+                                    <td>{{ demo.status|replace('_', ' ') }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="admin-empty-state">
+                    No unscheduled demos are assigned to you.
+                </div>
+            {% endif %}
+        </section>
+
+        <section class="admin-card" id="assigned-students">
+            <div class="admin-card-header">
+                <div>
+                    <span class="admin-card-kicker">Students</span>
+                    <h2>Students Assigned to You</h2>
+                </div>
+            </div>
+
+            {% if assigned_students %}
+                <div class="admin-table-wrap">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th>Student Code</th>
+                                <th>Name</th>
+                                <th>Instrument</th>
+                                <th>Phone</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for student in assigned_students %}
+                                <tr>
+                                    <td>{{ student.student_code }}</td>
+                                    <td>{{ student.full_name }}</td>
+                                    <td>{{ student.instrument or '—' }}</td>
+                                    <td>{{ student.phone or '—' }}</td>
+                                    <td>{{ student.status }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <div class="admin-empty-state">
+                    No students are currently assigned to you.
+                </div>
+            {% endif %}
+        </section>
+    </main>
+
+</body>
+</html>
