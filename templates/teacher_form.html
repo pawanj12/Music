@@ -1,385 +1,127 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-admin-theme="light">
+
+{# editing: edit page mein `teacher` hota hai, add page mein None.
+   Error aane par entered values wapas bharne ke liye `teacher` (edit) ya `prefill` (add) use hota hai. #}
+{% set editing = teacher %}
+{% set f = teacher or prefill or {} %}
 
 <head>
-
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>
-        {% if teacher %}
-        Edit Teacher
-        {% else %}
-        Add Teacher
-        {% endif %}
-        — Minerva Admin
-    </title>
-
-    <style>
-        * {
-            box-sizing: border-box;
-        }
-
-        body {
-            margin: 0;
-            font-family: Inter, Arial, sans-serif;
-            background: #f5f5f5;
-            color: #111;
-        }
-
-        .topbar {
-            height: 70px;
-            background: #111;
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 0 30px;
-        }
-
-        .brand {
-            font-size: 20px;
-            font-weight: 700;
-        }
-
-        .back {
-            color: white;
-            text-decoration: none;
-            border: 1px solid #444;
-            padding: 9px 14px;
-            border-radius: 8px;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: auto;
-            padding: 40px 20px;
-        }
-
-        .card {
-            background: white;
-            border: 1px solid #e5e5e5;
-            border-radius: 16px;
-            padding: 30px;
-        }
-
-        h1 {
-            margin-top: 0;
-            margin-bottom: 8px;
-        }
-
-        .intro {
-            color: #666;
-            margin-bottom: 28px;
-        }
-
-        .error {
-            background: #fff0f0;
-            color: #a00000;
-            border: 1px solid #ffcaca;
-            padding: 13px 15px;
-            border-radius: 9px;
-            margin-bottom: 20px;
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        .field {
-            margin-bottom: 20px;
-        }
-
-        .full {
-            grid-column: 1 / -1;
-        }
-
-        label {
-            display: block;
-            margin-bottom: 8px;
-            font-size: 13px;
-            font-weight: 700;
-        }
-
-        input,
-        textarea {
-            width: 100%;
-            border: 1px solid #ddd;
-            border-radius: 9px;
-            padding: 12px 13px;
-            font: inherit;
-            outline: none;
-        }
-
-        input:focus,
-        textarea:focus {
-            border-color: #111;
-        }
-
-        textarea {
-            min-height: 130px;
-            resize: vertical;
-        }
-
-        .hint {
-            margin-top: 6px;
-            font-size: 12px;
-            color: #777;
-        }
-
-        .actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .btn {
-            padding: 12px 18px;
-            border-radius: 9px;
-            border: 1px solid #ddd;
-            background: white;
-            text-decoration: none;
-            color: #111;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .btn-primary {
-            background: #111;
-            color: white;
-            border-color: #111;
-        }
-
-        @media (max-width: 700px) {
-
-            .topbar {
-                padding: 0 15px;
-            }
-
-            .grid {
-                grid-template-columns: 1fr;
-            }
-
-            .full {
-                grid-column: auto;
-            }
-
-            .card {
-                padding: 20px;
-            }
-
-            .actions {
-                flex-direction: column;
-            }
-
-            .btn {
-                width: 100%;
-                text-align: center;
-            }
-        }
-    </style>
-
+    <title>{% if editing %}Edit Teacher{% else %}Add Teacher{% endif %} — Minerva Admin</title>
+    {% include 'admin_head.html' %}
 </head>
 
 <body>
 
-    <header class="topbar">
+    {% set active_page = 'teachers' %}
+    {% include 'admin_sidebar.html' %}
 
-        <div class="brand">
-            Minerva Admin
-        </div>
+    <main class="admin-main">
 
-        <a href="{{ url_for('admin_teachers') }}" class="back">
-            ← Back to Teachers
-        </a>
-
-    </header>
-
-
-    <main class="container">
-
-        <div class="card">
-
-            <h1>
-
-                {% if teacher %}
-                Edit Teacher
-                {% else %}
-                Add New Teacher
-                {% endif %}
-
-            </h1>
-
-            <p class="intro">
-
-                {% if teacher %}
-                Update the teacher's account and profile information.
-                {% else %}
-                Create a teacher account and profile.
-                {% endif %}
-
-            </p>
-
-
-            {% if error %}
-
-            <div class="error">
-                {{ error }}
+        <!-- HEADER -->
+        <div class="admin-page-header">
+            <div>
+                <p class="admin-eyebrow">Teachers</p>
+                <h1>{% if editing %}Edit Teacher{% else %}Add New Teacher{% endif %}</h1>
+                <p>
+                    {% if editing %}
+                        Update the teacher's account and profile information.
+                    {% else %}
+                        Create a teacher account and profile.
+                    {% endif %}
+                </p>
             </div>
 
+            <div class="admin-header-actions">
+                <a href="{{ url_for('admin_teachers') }}" class="admin-secondary-button">Back to Teachers</a>
+            </div>
+        </div>
+
+
+        <section class="admin-card">
+
+            {% if error %}
+                <div class="admin-form-error">{{ error }}</div>
             {% endif %}
 
+            {% if editing %}
+                {% set form_action = url_for('edit_teacher', teacher_id=teacher.id) %}
+            {% else %}
+                {% set form_action = url_for('add_teacher') %}
+            {% endif %}
 
-            <form method="POST" action="{% if teacher %}
-                        {{ url_for('edit_teacher', teacher_id=teacher.id) }}
-                    {% else %}
-                        {{ url_for('add_teacher') }}
-                    {% endif %}">
+            <form method="POST" action="{{ form_action }}">
 
-                <div class="grid">
+                <div class="admin-form-grid">
 
-
-                    <div class="field">
-
-                        <label for="full_name">
-                            Full Name *
-                        </label>
-
+                    <div class="admin-form-group">
+                        <label for="full_name">Full Name *</label>
                         <input id="full_name" type="text" name="full_name" required
-                            value="{{ teacher.full_name if teacher else '' }}" placeholder="Teacher full name">
-
+                               value="{{ f.full_name or '' }}" placeholder="Teacher full name">
                     </div>
 
-
-                    <div class="field">
-
-                        <label for="email">
-                            Email *
-                        </label>
-
+                    <div class="admin-form-group">
+                        <label for="email">Email *</label>
                         <input id="email" type="email" name="email" required
-                            value="{{ teacher.email if teacher else '' }}" placeholder="teacher@example.com">
-
+                               value="{{ f.email or '' }}" placeholder="teacher@example.com">
                     </div>
 
-
-                    <div class="field">
-
-                        <label for="password">
-
-                            Password
-                            {% if not teacher %}*{% endif %}
-
-                        </label>
-
-                        <input id="password" type="password" name="password" {% if not teacher %}required{% endif %}
-                            placeholder="{% if teacher %}Leave blank to keep current password{% else %}Create password{% endif %}">
-
+                    <div class="admin-form-group">
+                        <label for="password">Password {% if not editing %}*{% endif %}</label>
+                        <input id="password" type="password" name="password" {% if not editing %}required minlength="6"{% endif %}
+                               autocomplete="new-password"
+                               placeholder="{% if editing %}Leave blank to keep current password{% else %}Create password (min 6 characters){% endif %}">
                     </div>
 
-
-                    <div class="field">
-
-                        <label for="phone">
-                            Phone
-                        </label>
-
-                        <input id="phone" type="tel" name="phone"
-                            value="{{ teacher.phone if teacher and teacher.phone else '' }}" placeholder="+91...">
-
+                    <div class="admin-form-group">
+                        <label for="phone">Phone</label>
+                        <input id="phone" type="tel" name="phone" value="{{ f.phone or '' }}" placeholder="+91...">
                     </div>
 
-
-                    <div class="field">
-
-                        <label for="instrument">
-                            Instrument
-                        </label>
-
+                    <div class="admin-form-group">
+                        <label for="instrument">Instrument</label>
                         <input id="instrument" type="text" name="instrument"
-                            value="{{ teacher.instrument if teacher and teacher.instrument else '' }}"
-                            placeholder="Guitar, Piano, Vocals...">
-
+                               value="{{ f.instrument or '' }}" placeholder="Guitar, Piano, Vocals...">
                     </div>
 
-
-                    <div class="field">
-
-                        <label for="experience_years">
-                            Experience
-                        </label>
-
+                    <div class="admin-form-group">
+                        <label for="experience_years">Experience (years)</label>
                         <input id="experience_years" type="number" name="experience_years" min="0" step="0.5"
-                            value="{{ teacher.experience_years if teacher and teacher.experience_years else '' }}"
-                            placeholder="e.g. 5">
-
+                               value="{{ f.experience_years or '' }}" placeholder="e.g. 5">
                     </div>
 
-
-                    <div class="field">
-
-                        <label for="qualification">
-                            Qualification
-                        </label>
-
+                    <div class="admin-form-group">
+                        <label for="qualification">Qualification</label>
                         <input id="qualification" type="text" name="qualification"
-                            value="{{ teacher.qualification if teacher and teacher.qualification else '' }}"
-                            placeholder="Music degree / certification">
-
+                               value="{{ f.qualification or '' }}" placeholder="Music degree / certification">
                     </div>
 
-
-                    <div class="field">
-
-                        <label for="joining_date">
-                            Joining Date
-                        </label>
-
-                        <input id="joining_date" type="date" name="joining_date"
-                            value="{{ teacher.joining_date if teacher and teacher.joining_date else '' }}">
-
+                    <div class="admin-form-group">
+                        <label for="joining_date">Joining Date</label>
+                        <input id="joining_date" type="date" name="joining_date" value="{{ f.joining_date or '' }}">
                     </div>
 
-
-                    <div class="field full">
-
-                        <label for="bio">
-                            Teacher Bio
-                        </label>
-
-                        <textarea id="bio" name="bio"
-                            placeholder="Short introduction about the teacher...">{{ teacher.bio if teacher and teacher.bio else '' }}</textarea>
-
+                    <div class="admin-form-group full">
+                        <label for="bio">Teacher Bio</label>
+                        <textarea id="bio" name="bio" placeholder="Short introduction about the teacher...">{{ f.bio or '' }}</textarea>
                     </div>
 
                 </div>
 
-
-                <div class="actions">
-
-                    <a href="{{ url_for('admin_teachers') }}" class="btn">
-                        Cancel
-                    </a>
-
-                    <button type="submit" class="btn btn-primary">
-                        {% if teacher %}
-                        Update Teacher
-                        {% else %}
-                        Create Teacher
-                        {% endif %}
+                <div class="admin-form-actions">
+                    <a href="{{ url_for('admin_teachers') }}" class="admin-secondary-button">Cancel</a>
+                    <button type="submit" class="admin-primary-button">
+                        {% if editing %}Update Teacher{% else %}Create Teacher{% endif %}
                     </button>
-
                 </div>
 
             </form>
 
-        </div>
+        </section>
 
     </main>
 
+    <script src="{{ url_for('static', filename='javascript/admin.js') }}"></script>
 </body>
 
 </html>

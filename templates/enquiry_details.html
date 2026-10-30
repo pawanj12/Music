@@ -1,45 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-admin-theme="light">
 
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>
-        Enquiry Details — Minerva Admin
-    </title>
-
-    <link
-        rel="stylesheet"
-        href="{{ url_for('static', filename='css/admin.css') }}"
-    >
-
+    <title>Enquiry Details — Minerva Admin</title>
+    {% include 'admin_head.html' %}
 </head>
 
 
 <body>
 
 
+    {% set active_page = 'enquiry_details' %}
     {% include 'admin_sidebar.html' %}
-
-
-    <!-- MOBILE MENU -->
-
-    <button
-        type="button"
-        id="adminMobileToggle"
-        class="admin-mobile-toggle"
-        aria-label="Open admin menu"
-    >
-
-        <i class="fa-solid fa-bars"></i>
-
-    </button>
 
 
     <!-- ========================================================
@@ -71,20 +43,13 @@
             </div>
 
 
-            <div
-                style="
-                    display:flex;
-                    gap:10px;
-                    flex-wrap:wrap;
-                "
-            >
+            <div class="admin-header-actions">
 
                 <a
                     href="{{ url_for('admin_teachers') }}"
                     class="admin-secondary-button"
                 >
-                    <i class="fa-solid fa-chalkboard-user"></i>
-                    &nbsp;
+
                     Manage Teachers
                 </a>
 
@@ -266,12 +231,7 @@
                         Message / Notes
                     </span>
 
-                    <p>
-                        {{ enquiry.message
-                           or
-                           'No message was added.'
-                        }}
-                    </p>
+                    <p>{{ enquiry.message or 'No message was added.' }}</p>
 
                 </div>
 
@@ -440,9 +400,6 @@
                         class="admin-primary-button"
                     >
 
-                        <i class="fa-solid fa-floppy-disk"></i>
-
-                        &nbsp;
 
                         Save Assignment & Schedule
 
@@ -490,10 +447,7 @@
              CONVERT TO STUDENT
              ==================================================== -->
 
-        <section
-            class="admin-card"
-            style="margin-top:20px;"
-        >
+        <section class="admin-card">
 
             <div class="admin-card-header">
 
@@ -512,14 +466,7 @@
             </div>
 
 
-            <p
-                style="
-                    color:var(--admin-muted);
-                    margin-top:0;
-                    line-height:1.7;
-                    font-size:13px;
-                "
-            >
+            <p class="admin-note-text">
 
                 Once the demo is completed or the person
                 is enrolled, you can create the student
@@ -541,9 +488,6 @@
                     class="admin-primary-button"
                 >
 
-                    <i class="fa-solid fa-user-graduate"></i>
-
-                    &nbsp;
 
                     View Student
                     {{ converted_student.student_code }}
@@ -577,9 +521,6 @@
                         class="admin-primary-button"
                     >
 
-                        <i class="fa-solid fa-user-plus"></i>
-
-                        &nbsp;
 
                         Convert to Student
 
@@ -611,6 +552,7 @@
     </main>
 
 
+    <script src="{{ url_for('static', filename='javascript/admin.js') }}"></script>
 </body>
 
 </html>

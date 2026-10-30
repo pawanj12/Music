@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en" data-admin-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ 'Edit course' if course else 'Add course' }} — Minerva Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/courses-admin.css') }}">
+</head>
+<body>
+    {% include 'admin_sidebar.html' %}
+    <main class="admin-main courses-page">
+        <header class="admin-page-header">
+            <div><p class="admin-eyebrow">ACADEMIC MANAGEMENT</p><h1>{{ 'Edit course' if course else 'Add a course' }}</h1><p>Keep course information accurate for your team.</p></div>
+            <a class="admin-secondary-button" href="{{ url_for('admin_courses') }}">← Back to courses</a>
+        </header>
+
+        {% if error %}<div class="admin-alert">{{ error }}</div>{% endif %}
+
+        <section class="admin-card course-form-card">
+            <div class="admin-card-header"><div><span class="admin-card-kicker">COURSE DETAILS</span><h2>{{ 'Update course information' if course else 'Course information' }}</h2></div></div>
+            <form method="POST" class="course-form">
+                <div class="course-form-grid">
+                    <label class="course-field"><span>Course code <b>*</b></span><input type="text" name="course_code" maxlength="50" required value="{{ course.course_code if course else request.form.get('course_code', '') }}" placeholder="e.g. GTR-BEGINNER"></label>
+                    <label class="course-field"><span>Course name <b>*</b></span><input type="text" name="course_name" maxlength="150" required value="{{ course.course_name if course else request.form.get('course_name', '') }}" placeholder="e.g. Beginner Guitar"></label>
+                    <label class="course-field"><span>Instrument / category</span><select name="instrument"><option value="">Select instrument</option>{% for item in ['Guitar', 'Piano & Keyboard', 'Tabla', 'Vocals', 'Violin', 'Music Theory', 'Other'] %}<option value="{{ item }}" {% if course and course.instrument == item or not course and request.form.get('instrument') == item %}selected{% endif %}>{{ item }}</option>{% endfor %}</select></label>
+                    <label class="course-field"><span>Duration (months)</span><input type="number" name="duration_months" min="1" step="1" value="{{ course.duration_months if course and course.duration_months else request.form.get('duration_months', '') }}" placeholder="e.g. 3"></label>
+                    <label class="course-field"><span>Monthly fee (₹)</span><input type="number" name="monthly_fee" min="0" step="0.01" value="{{ course.monthly_fee if course and course.monthly_fee is not none else request.form.get('monthly_fee', '') }}" placeholder="e.g. 2500.00"></label>
+                    <label class="course-field course-description-field"><span>Description</span><textarea name="description" rows="5" maxlength="5000" placeholder="Describe what students will learn in this course.">{{ course.description if course else request.form.get('description', '') }}</textarea></label>
+                </div>
+                <label class="course-active-toggle"><input type="checkbox" name="is_active" {% if not course or course.is_active %}checked{% endif %}><span><strong>Course is active</strong><small>Active courses can be offered for new enrolments.</small></span></label>
+                <div class="course-form-actions"><a class="admin-secondary-button" href="{{ url_for('admin_courses') }}">Cancel</a><button class="admin-primary-button" type="submit">{{ 'Save changes' if course else 'Create course' }}</button></div>
+            </form>
+        </section>
+    </main>
+    <script src="{{ url_for('static', filename='javascript/admin.js') }}"></script>
+</body>
+</html>

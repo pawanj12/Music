@@ -1,209 +1,96 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-admin-theme="light">
 
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>
-        {{ student.full_name }} — Minerva Admin
-    </title>
-
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
-
+    <title>{{ student.full_name }} — Minerva Admin</title>
+    {% include 'admin_head.html' %}
 </head>
 
 <body>
 
-    <div class="admin-layout">
+    {% set active_page = 'students' %}
+    {% include 'admin_sidebar.html' %}
 
-        {% set active_page = "students" %}
-        {% include "admin_sidebar.html" %}
+    <main class="admin-main">
 
-        <main class="admin-main">
+        <!-- HEADER -->
+        <div class="admin-page-header">
+            <div>
+                <p class="admin-eyebrow">Student Profile</p>
+                <h1>{{ student.full_name }}</h1>
+                <p>Student ID: {{ student.student_code }}</p>
+            </div>
 
-            <div class="admin-topbar">
+            <div class="admin-header-actions">
+                <a href="{{ url_for('admin_students') }}" class="admin-secondary-button">Back to Students</a>
+            </div>
+        </div>
 
+
+        <section class="admin-card">
+
+            <div class="admin-profile-header">
                 <div>
-
-                    <h1>
-                        {{ student.full_name }}
-                    </h1>
-
-                    <p>
-                        Student ID: {{ student.student_code }}
-                    </p>
-
+                    <span class="admin-card-kicker">Student Code</span>
+                    <h2>{{ student.student_code }}</h2>
                 </div>
 
+                <span class="admin-status admin-status-{{ student.status|lower }}">{{ student.status }}</span>
+            </div>
 
-                <div class="admin-topbar-actions">
 
-                    <button id="adminThemeToggle" class="admin-theme-toggle" type="button">
-                        Theme
-                    </button>
+            <div class="admin-detail-grid">
 
+                <div><span>Full Name</span><strong>{{ student.full_name }}</strong></div>
+                <div><span>Phone</span><strong>{{ student.phone or '—' }}</strong></div>
+                <div><span>Email</span><strong>{{ student.email or '—' }}</strong></div>
+                <div><span>Age</span><strong>{{ student.age or '—' }}</strong></div>
+                <div><span>Instrument</span><strong>{{ student.instrument or '—' }}</strong></div>
+                <div><span>Teacher</span><strong>{{ student.teacher_name or 'Not assigned' }}</strong></div>
+
+                <div>
+                    <span>Enrollment Date</span>
+                    <strong>
+                        {% if student.enrollment_date %}{{ student.enrollment_date.strftime('%d %b %Y') }}{% else %}—{% endif %}
+                    </strong>
+                </div>
+
+                <div>
+                    <span>Created</span>
+                    <strong>{{ student.created_at.strftime('%d %b %Y') }}</strong>
                 </div>
 
             </div>
 
 
-            <section class="admin-card">
-
-                <div class="student-profile-header">
-
-                    <div>
-
-                        <span class="student-code-label">
-                            Student Code
-                        </span>
-
-                        <h2>
-                            {{ student.student_code }}
-                        </h2>
-
-                    </div>
+            <div class="admin-message-box">
+                <span>Notes</span>
+                <p>{{ student.notes or 'No notes available.' }}</p>
+            </div>
 
 
-                    {% if student.status == "ACTIVE" %}
+            <div class="admin-actions-row">
 
-                    <span class="admin-status active">
-                        ACTIVE
-                    </span>
+                <a href="{{ url_for('edit_student', student_id=student.id) }}" class="admin-primary-button">Edit Student</a>
 
-                    {% else %}
+                <form method="POST" action="{{ url_for('toggle_student_status', student_id=student.id) }}">
+                    <button type="submit" class="admin-secondary-button">
+                        {% if student.status == 'ACTIVE' %}Deactivate{% else %}Activate{% endif %}
+                    </button>
+                </form>
 
-                    <span class="admin-status inactive">
-                        {{ student.status }}
-                    </span>
+                <form method="POST" action="{{ url_for('delete_student', student_id=student.id) }}"
+                      onsubmit="return confirm('Are you sure you want to delete this student?');">
+                    <button type="submit" class="admin-danger-button">Delete</button>
+                </form>
 
-                    {% endif %}
+            </div>
 
-                </div>
+        </section>
 
-
-                <div class="student-detail-grid">
-
-                    <div>
-                        <span>Full Name</span>
-                        <strong>{{ student.full_name }}</strong>
-                    </div>
-
-
-                    <div>
-                        <span>Phone</span>
-                        <strong>{{ student.phone or "—" }}</strong>
-                    </div>
-
-
-                    <div>
-                        <span>Email</span>
-                        <strong>{{ student.email or "—" }}</strong>
-                    </div>
-
-
-                    <div>
-                        <span>Age</span>
-                        <strong>{{ student.age or "—" }}</strong>
-                    </div>
-
-
-                    <div>
-                        <span>Instrument</span>
-                        <strong>{{ student.instrument or "—" }}</strong>
-                    </div>
-
-
-                    <div>
-                        <span>Teacher</span>
-                        <strong>{{ student.teacher_name or "Not assigned" }}</strong>
-                    </div>
-
-
-                    <div>
-                        <span>Enrollment Date</span>
-
-                        <strong>
-                            {% if student.enrollment_date %}
-                            {{ student.enrollment_date.strftime("%d %b %Y") }}
-                            {% else %}
-                            —
-                            {% endif %}
-                        </strong>
-
-                    </div>
-
-
-                    <div>
-                        <span>Created</span>
-
-                        <strong>
-                            {{ student.created_at.strftime("%d %b %Y") }}
-                        </strong>
-
-                    </div>
-
-                </div>
-
-
-                <div class="student-notes">
-
-                    <span>Notes</span>
-
-                    <p>
-                        {{ student.notes or "No notes available." }}
-                    </p>
-
-                </div>
-
-
-                <div class="student-actions">
-
-                    <a href="{{ url_for('edit_student', student_id=student.id) }}" class="admin-primary-button">
-                        Edit Student
-                    </a>
-
-
-                    <form method="POST" action="{{ url_for('toggle_student_status', student_id=student.id) }}">
-
-                        <button type="submit" class="admin-secondary-button">
-                            {% if student.status == "ACTIVE" %}
-                            Deactivate
-                            {% else %}
-                            Activate
-                            {% endif %}
-                        </button>
-
-                    </form>
-
-
-                    <form method="POST" action="{{ url_for('delete_student', student_id=student.id) }}"
-                        onsubmit="return confirm('Are you sure you want to delete this student?');">
-
-                        <button type="submit" class="admin-danger-button">
-                            Delete
-                        </button>
-
-                    </form>
-
-
-                    <a href="{{ url_for('admin_students') }}" class="admin-secondary-button">
-                        Back
-                    </a>
-
-                </div>
-
-            </section>
-
-        </main>
-
-    </div>
-
+    </main>
 
     <script src="{{ url_for('static', filename='javascript/admin.js') }}"></script>
-
 </body>
 
 </html>

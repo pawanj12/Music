@@ -1,63 +1,12 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-admin-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Teacher Dashboard — Minerva</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
-    <script src="{{ url_for('static', filename='javascript/admin.js') }}" defer></script>
+    {% include 'admin_head.html' %}
 </head>
 <body>
 
-    <aside class="admin-sidebar" id="teacherSidebar">
-        <div class="admin-sidebar-brand">
-            <a href="{{ url_for('teacher_dashboard') }}" class="admin-brand-link">
-                <span class="admin-brand-dot"></span>
-                <span>Minerva Teacher</span>
-            </a>
-        </div>
-
-        <div class="admin-sidebar-user">
-            <strong>{{ teacher_name }}</strong>
-            <small>TEACHER</small>
-        </div>
-
-        <nav class="admin-nav">
-            <a href="{{ url_for('teacher_dashboard') }}" class="admin-nav-item active">
-                <span>Dashboard</span>
-            </a>
-            <a href="#assigned-demos" class="admin-nav-item">
-                <span>Demo Classes</span>
-            </a>
-            <a href="#assigned-students" class="admin-nav-item">
-                <span>Students</span>
-            </a>
-            <a href="#" class="admin-nav-item">
-                <span>Attendance</span>
-            </a>
-        </nav>
-
-        <div class="admin-sidebar-bottom">
-            <button type="button" class="admin-theme-toggle" id="adminThemeToggle">
-                <span class="admin-theme-icon">◐</span>
-                <span>Theme</span>
-            </button>
-            <a href="{{ url_for('logout') }}" class="admin-nav-item admin-logout-item">
-                <span>Logout</span>
-            </a>
-        </div>
-    </aside>
-
-    <div class="admin-sidebar-overlay" id="adminSidebarOverlay"></div>
-
-    <button
-        type="button"
-        id="adminMobileToggle"
-        class="admin-mobile-toggle"
-        aria-label="Open teacher menu"
-    >
-        ☰
-    </button>
+    {% include 'teacher_sidebar.html' %}
 
     <main class="admin-main">
         <div class="admin-page-header">
@@ -105,7 +54,7 @@
                             </div>
                             <div>
                                 <strong>{{ demo.demo_time_display or 'Time not set' }}</strong>
-                                <span>{{ demo.status|replace('_', ' ') }}</span>
+                                <span class="admin-status admin-status-{{ demo.status|lower }}">{{ demo.status|replace('_', ' ') }}</span>
                             </div>
                             <div>
                                 <span>{{ demo.phone }}</span>
@@ -150,7 +99,7 @@
                                     <td>{{ demo.instrument }}</td>
                                     <td>{{ demo.demo_date.strftime('%d %b %Y') if demo.demo_date else '—' }}</td>
                                     <td>{{ demo.demo_time_display or '—' }}</td>
-                                    <td>{{ demo.status|replace('_', ' ') }}</td>
+                                    <td><span class="admin-status admin-status-{{ demo.status|lower }}">{{ demo.status|replace('_', ' ') }}</span></td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -190,7 +139,7 @@
                                     <td>{{ demo.full_name }}</td>
                                     <td>{{ demo.instrument }}</td>
                                     <td>{{ demo.preferred_time or '—' }}</td>
-                                    <td>{{ demo.status|replace('_', ' ') }}</td>
+                                    <td><span class="admin-status admin-status-{{ demo.status|lower }}">{{ demo.status|replace('_', ' ') }}</span></td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -230,7 +179,7 @@
                                     <td>{{ student.full_name }}</td>
                                     <td>{{ student.instrument or '—' }}</td>
                                     <td>{{ student.phone or '—' }}</td>
-                                    <td>{{ student.status }}</td>
+                                    <td><span class="admin-status admin-status-{{ student.status|lower }}">{{ student.status }}</span></td>
                                 </tr>
                             {% endfor %}
                         </tbody>
@@ -244,5 +193,6 @@
         </section>
     </main>
 
+    <script src="{{ url_for('static', filename='javascript/admin.js') }}"></script>
 </body>
 </html>

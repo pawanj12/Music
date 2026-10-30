@@ -1,0 +1,225 @@
+/* Courses admin pages — uses shared admin theme variables. */
+.courses-page {
+    max-width: 1600px;
+}
+
+.course-stat-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px;
+    margin-bottom: 22px;
+}
+
+.course-stat {
+    padding: 20px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.course-stat span {
+    color: var(--admin-muted);
+    font-size: 12px;
+    font-weight: 650;
+}
+
+.course-stat strong {
+    color: var(--admin-text);
+    font-size: 30px;
+    line-height: 1;
+}
+
+.course-list-card {
+    margin-bottom: 24px;
+}
+
+.course-filter-form {
+    display: grid;
+    grid-template-columns: minmax(220px, 1fr) minmax(160px, 220px) auto;
+    gap: 14px;
+    align-items: end;
+    margin-bottom: 22px;
+}
+
+.course-field {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+    color: var(--admin-text);
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.course-field span b {
+    color: var(--admin-text);
+}
+
+.course-field input,
+.course-field select,
+.course-field textarea {
+    width: 100%;
+    min-height: 43px;
+    border: 1px solid var(--admin-border);
+    border-radius: 9px;
+    padding: 10px 12px;
+    background: var(--admin-surface);
+    color: var(--admin-text);
+    font: inherit;
+    font-weight: 450;
+    outline: none;
+}
+
+.course-field textarea {
+    resize: vertical;
+    min-height: 125px;
+}
+
+.course-field input:focus,
+.course-field select:focus,
+.course-field textarea:focus {
+    border-color: var(--admin-text);
+    box-shadow: 0 0 0 3px var(--admin-hover);
+}
+
+.course-filter-actions,
+.course-row-actions,
+.course-form-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.course-row-actions form {
+    margin: 0;
+}
+
+.course-small-button {
+    min-height: 32px;
+    padding: 7px 10px;
+    font-size: 11px;
+    white-space: nowrap;
+}
+
+.course-name-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.course-name-cell strong {
+    font-size: 12px;
+}
+
+.course-name-cell small {
+    color: var(--admin-muted);
+    font-size: 10px;
+}
+
+.course-table {
+    min-width: 850px;
+}
+
+.course-form-card {
+    max-width: 1000px;
+}
+
+.course-form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 20px;
+}
+
+.course-description-field {
+    grid-column: 1/-1;
+}
+
+.course-active-toggle {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-top: 22px;
+    padding: 16px;
+    border: 1px solid var(--admin-border);
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.course-active-toggle input {
+    width: 17px;
+    height: 17px;
+    margin-top: 2px;
+    accent-color: var(--admin-text);
+}
+
+.course-active-toggle span {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    color: var(--admin-text);
+    font-size: 13px;
+}
+
+.course-active-toggle small {
+    color: var(--admin-muted);
+    font-size: 11px;
+    font-weight: 450;
+}
+
+.course-form-actions {
+    justify-content: flex-end;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--admin-border);
+}
+
+@media (max-width:900px) {
+    .admin-main.courses-page {
+        padding: 24px 18px;
+    }
+
+    .course-filter-form {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .course-search-field {
+        grid-column: 1/-1;
+    }
+
+    .course-filter-actions {
+        grid-column: 1/-1;
+    }
+}
+
+@media (max-width:600px) {
+    .course-stat-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .course-form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .course-description-field {
+        grid-column: auto;
+    }
+
+    .admin-page-header {
+        flex-direction: column;
+    }
+
+    .course-filter-form {
+        grid-template-columns: 1fr;
+    }
+
+    .course-search-field,
+    .course-filter-actions {
+        grid-column: auto;
+    }
+
+    .course-filter-actions>* {
+        flex: 1;
+    }
+}

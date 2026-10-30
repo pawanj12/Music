@@ -1,0 +1,16 @@
+{# Har admin / teacher page ke <head> mein include hota hai. <title> page mein alag se likho. #}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<script>
+    /* Page dikhne se pehle saved theme lagao, taaki flash na ho */
+    (function () {
+        var theme = "light";
+        try {
+            if (localStorage.getItem("minerva_admin_theme") === "dark") { theme = "dark"; }
+        } catch (e) {}
+        document.documentElement.setAttribute("data-admin-theme", theme);
+    })();
+</script>
+
+<link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">

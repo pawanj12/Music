@@ -1,1010 +1,200 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-admin-theme="light">
 
 <head>
-
-  <meta charset="UTF-8">
-
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <title>
-    Enquiries — Minerva Admin
-  </title>
-
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: Arial, sans-serif;
-      background: #f5f6fa;
-      color: #171717;
-    }
-
-    a {
-      text-decoration: none;
-      color: inherit;
-    }
-
-    /* ======================================================
-       LAYOUT
-       ====================================================== */
-
-    .admin-layout {
-      min-height: 100vh;
-      display: flex;
-    }
-
-    .sidebar {
-      width: 250px;
-      background: #111;
-      color: #fff;
-      padding: 24px 16px;
-      position: fixed;
-      top: 0;
-      bottom: 0;
-      left: 0;
-    }
-
-    .brand {
-      font-size: 21px;
-      font-weight: 700;
-      margin-bottom: 35px;
-      padding: 0 10px;
-    }
-
-    .sidebar-nav {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .sidebar-nav a {
-      padding: 12px 14px;
-      border-radius: 10px;
-      color: #bbb;
-      transition: 0.2s ease;
-    }
-
-    .sidebar-nav a:hover,
-    .sidebar-nav a.active {
-      background: #fff;
-      color: #111;
-    }
-
-    .main {
-      margin-left: 250px;
-      width: calc(100% - 250px);
-      padding: 30px;
-    }
-
-    /* ======================================================
-       HEADER
-       ====================================================== */
-
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 20px;
-      margin-bottom: 25px;
-    }
-
-    .topbar h1 {
-      font-size: 28px;
-    }
-
-    .topbar p {
-      color: #777;
-      margin-top: 5px;
-    }
-
-    .user-info {
-      background: #fff;
-      padding: 10px 15px;
-      border-radius: 12px;
-      border: 1px solid #ddd;
-    }
-
-    /* ======================================================
-       QUICK FILTERS
-       ====================================================== */
-
-    .quick-filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-bottom: 18px;
-    }
-
-    .quick-filters a {
-      padding: 9px 15px;
-      border: 1px solid #ddd;
-      background: #fff;
-      border-radius: 9px;
-      font-size: 14px;
-      transition: 0.2s ease;
-    }
-
-    .quick-filters a:hover,
-    .quick-filters a.active {
-      background: #111;
-      color: #fff;
-      border-color: #111;
-    }
-
-    /* ======================================================
-       FILTER BOX
-       ====================================================== */
-
-    .filter-card {
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 16px;
-      padding: 20px;
-      margin-bottom: 20px;
-    }
-
-    .filter-grid {
-      display: grid;
-      grid-template-columns:
-        minmax(200px, 2fr) minmax(140px, 1fr) minmax(140px, 1fr) minmax(140px, 1fr) minmax(140px, 1fr);
-      gap: 12px;
-    }
-
-    .filter-field {
-      display: flex;
-      flex-direction: column;
-      gap: 6px;
-    }
-
-    .filter-field label {
-      font-size: 12px;
-      color: #666;
-      font-weight: 600;
-    }
-
-    .filter-field input,
-    .filter-field select {
-      width: 100%;
-      padding: 11px 12px;
-      border: 1px solid #d8d8d8;
-      border-radius: 9px;
-      background: #fff;
-      outline: none;
-    }
-
-    .filter-field input:focus,
-    .filter-field select:focus {
-      border-color: #111;
-    }
-
-    .filter-actions {
-      display: flex;
-      gap: 10px;
-      margin-top: 14px;
-    }
-
-    .btn {
-      border: 0;
-      border-radius: 9px;
-      padding: 11px 17px;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
-    .btn-dark {
-      background: #111;
-      color: #fff;
-    }
-
-    .btn-light {
-      background: #eee;
-      color: #111;
-    }
-
-    /* ======================================================
-       RESULTS
-       ====================================================== */
-
-    .result-info {
-      margin-bottom: 12px;
-      color: #666;
-      font-size: 14px;
-    }
-
-    .table-card {
-      background: #fff;
-      border: 1px solid #ddd;
-      border-radius: 16px;
-      overflow: hidden;
-    }
-
-    .table-scroll {
-      overflow-x: auto;
-    }
-
-    table {
-      width: 100%;
-      min-width: 1100px;
-      border-collapse: collapse;
-    }
-
-    th {
-      background: #fafafa;
-      text-align: left;
-      padding: 15px;
-      font-size: 12px;
-      text-transform: uppercase;
-      color: #666;
-      border-bottom: 1px solid #ddd;
-    }
-
-    td {
-      padding: 15px;
-      border-bottom: 1px solid #eee;
-      font-size: 14px;
-      vertical-align: middle;
-    }
-
-    tr:last-child td {
-      border-bottom: 0;
-    }
-
-    .customer-name {
-      font-weight: 700;
-    }
-
-    .customer-email {
-      color: #777;
-      font-size: 12px;
-      margin-top: 3px;
-    }
-
-    .demo-date {
-      font-weight: 600;
-    }
-
-    .demo-time {
-      color: #777;
-      font-size: 12px;
-      margin-top: 3px;
-    }
-
-    /* ======================================================
-       STATUS
-       ====================================================== */
-
-    .status-form {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-    }
-
-    .status-form select {
-      padding: 7px 8px;
-      border: 1px solid #ddd;
-      border-radius: 7px;
-      font-size: 12px;
-    }
-
-    .status-form button {
-      border: 0;
-      padding: 7px 9px;
-      border-radius: 7px;
-      background: #111;
-      color: #fff;
-      cursor: pointer;
-      font-size: 12px;
-    }
-
-    /* ======================================================
-       VIEW
-       ====================================================== */
-
-    .view-btn {
-      display: inline-block;
-      padding: 8px 13px;
-      border-radius: 8px;
-      background: #111;
-      color: #fff;
-      font-size: 12px;
-      font-weight: 600;
-    }
-
-    .view-btn:hover {
-      opacity: 0.8;
-    }
-
-    /* ======================================================
-       PAGINATION
-       ====================================================== */
-
-    .pagination {
-      display: flex;
-      justify-content: center;
-      gap: 7px;
-      padding: 22px;
-      flex-wrap: wrap;
-    }
-
-    .pagination a,
-    .pagination span {
-      min-width: 38px;
-      height: 38px;
-      padding: 0 10px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #fff;
-      font-size: 13px;
-    }
-
-    .pagination a:hover,
-    .pagination .current {
-      background: #111;
-      color: #fff;
-      border-color: #111;
-    }
-
-    /* ======================================================
-       MOBILE
-       ====================================================== */
-
-    @media (max-width: 900px) {
-
-      .sidebar {
-        position: static;
-        width: 100%;
-        height: auto;
-      }
-
-      .admin-layout {
-        display: block;
-      }
-
-      .main {
-        margin-left: 0;
-        width: 100%;
-        padding: 20px;
-      }
-
-      .filter-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-
-    }
-
-    @media (max-width: 600px) {
-
-      .topbar {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
-      .filter-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .main {
-        padding: 15px;
-      }
-
-    }
-  </style>
-
+    <title>Enquiries — Minerva Admin</title>
+    {% include 'admin_head.html' %}
 </head>
-
 
 <body>
 
-  <div class="admin-layout">
+    {% set active_page = 'enquiries' %}
+    {% include 'admin_sidebar.html' %}
 
+    <main class="admin-main">
 
-    <!-- ======================================================
-       SIDEBAR
-       ====================================================== -->
-
-    <aside class="sidebar">
-
-      <div class="brand">
-        Minerva Admin
-      </div>
-
-      <nav class="sidebar-nav">
-
-        <a href="{{ url_for('admin_dashboard') }}">
-          Dashboard
-        </a>
-
-        <a href="{{ url_for('admin_enquiries') }}" class="active">
-
-          Enquiries
-
-        </a>
-
-        <a href="#">
-          Students
-        </a>
-
-        <a href="#">
-          Teachers
-        </a>
-
-        <a href="#">
-          Courses
-        </a>
-
-        <a href="#">
-          Attendance
-        </a>
-
-        <a href="#">
-          Payments
-        </a>
-
-        <a href="#">
-          Website CMS
-        </a>
-
-        <a href="{{ url_for('logout') }}">
-          Logout
-        </a>
-
-      </nav>
-
-    </aside>
-
-
-    <!-- ======================================================
-       MAIN
-       ====================================================== -->
-
-    <main class="main">
-
-
-      <!-- HEADER -->
-
-      <div class="topbar">
-
-        <div>
-
-          <h1>
-            Enquiries
-          </h1>
-
-          <p>
-            Manage demo requests and customer enquiries.
-          </p>
-
-        </div>
-
-        <div class="user-info">
-
-          {{ user_name }}
-
-        </div>
-
-      </div>
-
-
-      <!-- ======================================================
-         QUICK FILTERS
-         ====================================================== -->
-
-      <div class="quick-filters">
-
-        <a href="{{ url_for('admin_enquiries') }}" class="{% if period == 'all' %}active{% endif %}">
-
-          All
-
-        </a>
-
-        <a href="{{ url_for('admin_enquiries', period='today') }}" class="{% if period == 'today' %}active{% endif %}">
-
-          Today
-
-        </a>
-
-        <a href="{{ url_for('admin_enquiries', period='7days') }}" class="{% if period == '7days' %}active{% endif %}">
-
-          Recent 7 Days
-
-        </a>
-
-        <a href="{{ url_for('admin_enquiries', period='30days') }}"
-          class="{% if period == '30days' %}active{% endif %}">
-
-          Recent 30 Days
-
-        </a>
-
-        <a href="{{ url_for('admin_enquiries', period='old') }}" class="{% if period == 'old' %}active{% endif %}">
-
-          Old 30+ Days
-
-        </a>
-
-      </div>
-
-
-      <!-- ======================================================
-         SEARCH / FILTER
-         ====================================================== -->
-
-      <div class="filter-card">
-
-        <form method="GET" action="{{ url_for('admin_enquiries') }}">
-
-
-          <div class="filter-grid">
-
-
-            <div class="filter-field">
-
-              <label>
-                Search
-              </label>
-
-              <input type="text" name="q" value="{{ q }}" placeholder="Name, phone, email, Demo ID...">
-
+        <!-- HEADER -->
+        <div class="admin-page-header">
+            <div>
+                <p class="admin-eyebrow">Enquiries</p>
+                <h1>Enquiries</h1>
+                <p>Manage demo requests and customer enquiries.</p>
             </div>
-
-
-            <div class="filter-field">
-
-              <label>
-                Status
-              </label>
-
-              <select name="status">
-
-                <option value="">
-                  All Status
-                </option>
-
-                {% for item in allowed_statuses %}
-
-                <option value="{{ item }}" {% if status==item %}selected{% endif %}>
-
-                  {{ item.replace('_', ' ') }}
-
-                </option>
-
-                {% endfor %}
-
-              </select>
-
-            </div>
-
-
-            <div class="filter-field">
-
-              <label>
-                Instrument
-              </label>
-
-              <select name="instrument">
-
-                <option value="">
-                  All Instruments
-                </option>
-
-                {% for item in instruments %}
-
-                <option value="{{ item }}" {% if instrument==item %}selected{% endif %}>
-
-                  {{ item }}
-
-                </option>
-
-                {% endfor %}
-
-              </select>
-
-            </div>
-
-
-            <div class="filter-field">
-
-              <label>
-                Date From
-              </label>
-
-              <input type="date" name="date_from" value="{{ date_from }}">
-
-            </div>
-
-
-            <div class="filter-field">
-
-              <label>
-                Date To
-              </label>
-
-              <input type="date" name="date_to" value="{{ date_to }}">
-
-            </div>
-
-
-          </div>
-
-
-          <div class="filter-actions">
-
-            <button type="submit" class="btn btn-dark">
-
-              Search / Filter
-
-            </button>
-
-            <a href="{{ url_for('admin_enquiries') }}" class="btn btn-light">
-
-              Reset
-
-            </a>
-
-          </div>
-
-        </form>
-
-      </div>
-
-
-      <!-- ======================================================
-         RESULT INFO
-         ====================================================== -->
-
-      <div class="result-info">
-
-        Showing
-        <strong>{{ enquiries|length }}</strong>
-        of
-        <strong>{{ total }}</strong>
-        enquiries
-
-      </div>
-
-
-      <!-- ======================================================
-         TABLE
-         ====================================================== -->
-
-      <div class="table-card">
-
-        <div class="table-scroll">
-
-          <table>
-
-            <thead>
-
-              <tr>
-
-                <th>
-                  Demo ID
-                </th>
-
-                <th>
-                  Customer
-                </th>
-
-                <th>
-                  Instrument
-                </th>
-
-                <th>
-                  Phone
-                </th>
-
-                <th>
-                  Teacher
-                </th>
-
-                <th>
-                  Demo
-                </th>
-
-                <th>
-                  Status
-                </th>
-
-                <th>
-                  Action
-                </th>
-
-              </tr>
-
-            </thead>
-
-
-            <tbody>
-
-
-              {% for enquiry in enquiries %}
-
-              <tr>
-
-
-                <!-- DEMO ID -->
-
-                <td>
-
-                  <strong>
-                    {{ enquiry.demo_id }}
-                  </strong>
-
-                </td>
-
-
-                <!-- CUSTOMER -->
-
-                <td>
-
-                  <div class="customer-name">
-
-                    {{ enquiry.full_name }}
-
-                  </div>
-
-                  <div class="customer-email">
-
-                    {{ enquiry.email }}
-
-                  </div>
-
-                </td>
-
-
-                <!-- INSTRUMENT -->
-
-                <td>
-
-                  {{ enquiry.instrument }}
-
-                </td>
-
-
-                <!-- PHONE -->
-
-                <td>
-
-                  {{ enquiry.phone }}
-
-                </td>
-
-
-                <!-- TEACHER -->
-
-                <td>
-
-                  {% if enquiry.assigned_teacher %}
-
-                  {{ enquiry.assigned_teacher }}
-
-                  {% elif enquiry.teacher_name %}
-
-                  {{ enquiry.teacher_name }}
-
-                  {% else %}
-
-                  <span style="color:#999;">
-                    Not assigned
-                  </span>
-
-                  {% endif %}
-
-                </td>
-
-
-                <!-- DEMO -->
-
-                <td>
-
-                  {% if enquiry.demo_date %}
-
-                  <div class="demo-date">
-
-                    {{ enquiry.demo_date }}
-
-                  </div>
-
-                  {% if enquiry.demo_time_display %}
-
-                  <div class="demo-time">
-
-                    {{ enquiry.demo_time_display }}
-
-                  </div>
-
-                  {% endif %}
-
-                  {% else %}
-
-                  <span style="color:#999;">
-                    Not scheduled
-                  </span>
-
-                  {% endif %}
-
-                </td>
-
-
-                <!-- STATUS -->
-
-                <td>
-
-                  <form class="status-form" method="POST" action="{{ url_for(
-                    'update_enquiry_status',
-                    enquiry_id=enquiry.id
-                  ) }}">
-
-
-                    <select name="status">
-
-                      {% for item in allowed_statuses %}
-
-                      <option value="{{ item }}" {% if enquiry.status==item %} selected {% endif %}>
-
-                        {{ item.replace('_', ' ') }}
-
-                      </option>
-
-                      {% endfor %}
-
-                    </select>
-
-
-                    <button type="submit">
-
-                      Save
-
-                    </button>
-
-
-                  </form>
-
-                </td>
-
-
-                <!-- ACTION -->
-
-                <td>
-
-                  <a class="view-btn" href="{{ url_for(
-                    'enquiry_details',
-                    enquiry_id=enquiry.id
-                  ) }}">
-
-                    View
-
-                  </a>
-
-                </td>
-
-
-              </tr>
-
-              {% else %}
-
-              <tr>
-
-                <td colspan="8" style="
-                  text-align:center;
-                  padding:50px;
-                  color:#777;
-                ">
-
-                  No enquiries found.
-
-                </td>
-
-              </tr>
-
-              {% endfor %}
-
-
-            </tbody>
-
-          </table>
-
         </div>
 
 
-        <!-- ====================================================
-           PAGINATION
-           ==================================================== -->
-
-        {% if total_pages > 1 %}
-
-        <div class="pagination">
-
-
-          {% if page > 1 %}
-
-          <a href="{{ url_for(
-            'admin_enquiries',
-            q=q,
-            status=status,
-            instrument=instrument,
-            date_from=date_from,
-            date_to=date_to,
-            period=period,
-            page=page-1
-          ) }}">
-
-            ←
-
-          </a>
-
-          {% endif %}
-
-
-          {% for page_number in range(1, total_pages + 1) %}
-
-          {% if page_number == page %}
-
-          <span class="current">
-
-            {{ page_number }}
-
-          </span>
-
-          {% elif
-          page_number <= 3 or page_number> total_pages - 3
-            or (page_number >= page - 1 and page_number <= page + 1) %} <a href="{{ url_for(
-              'admin_enquiries',
-              q=q,
-              status=status,
-              instrument=instrument,
-              date_from=date_from,
-              date_to=date_to,
-              period=period,
-              page=page_number
-            ) }}">
-
-              {{ page_number }}
-
-              </a>
-
-              {% endif %}
-
-              {% endfor %}
-
-
-              {% if page < total_pages %} <a href="{{ url_for(
-            'admin_enquiries',
-            q=q,
-            status=status,
-            instrument=instrument,
-            date_from=date_from,
-            date_to=date_to,
-            period=period,
-            page=page+1
-          ) }}">
-
-                →
-
-                </a>
-
-                {% endif %}
-
-
+        <!-- QUICK FILTERS -->
+        <div class="admin-chips">
+            <a href="{{ url_for('admin_enquiries') }}" class="admin-chip {% if period == 'all' %}active{% endif %}">All</a>
+            <a href="{{ url_for('admin_enquiries', period='today') }}" class="admin-chip {% if period == 'today' %}active{% endif %}">Today</a>
+            <a href="{{ url_for('admin_enquiries', period='7days') }}" class="admin-chip {% if period == '7days' %}active{% endif %}">Recent 7 Days</a>
+            <a href="{{ url_for('admin_enquiries', period='30days') }}" class="admin-chip {% if period == '30days' %}active{% endif %}">Recent 30 Days</a>
+            <a href="{{ url_for('admin_enquiries', period='old') }}" class="admin-chip {% if period == 'old' %}active{% endif %}">Old 30+ Days</a>
         </div>
 
-        {% endif %}
 
-      </div>
+        <!-- SEARCH / FILTER -->
+        <div class="admin-card">
+            <form method="GET" action="{{ url_for('admin_enquiries') }}">
 
+                <div class="admin-filter-grid">
+
+                    <div class="admin-filter-field">
+                        <label for="q">Search</label>
+                        <input type="text" id="q" name="q" value="{{ q }}" placeholder="Name, phone, email, Demo ID...">
+                    </div>
+
+                    <div class="admin-filter-field">
+                        <label for="f_status">Status</label>
+                        <select id="f_status" name="status">
+                            <option value="">All Status</option>
+                            {% for item in allowed_statuses %}
+                                <option value="{{ item }}" {% if status == item %}selected{% endif %}>{{ item.replace('_', ' ') }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="admin-filter-field">
+                        <label for="f_instrument">Instrument</label>
+                        <select id="f_instrument" name="instrument">
+                            <option value="">All Instruments</option>
+                            {% for item in instruments %}
+                                <option value="{{ item }}" {% if instrument == item %}selected{% endif %}>{{ item }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="admin-filter-field">
+                        <label for="date_from">Date From</label>
+                        <input type="date" id="date_from" name="date_from" value="{{ date_from }}">
+                    </div>
+
+                    <div class="admin-filter-field">
+                        <label for="date_to">Date To</label>
+                        <input type="date" id="date_to" name="date_to" value="{{ date_to }}">
+                    </div>
+
+                </div>
+
+                <div class="admin-filter-actions">
+                    <button type="submit" class="admin-primary-button">Search / Filter</button>
+                    <a href="{{ url_for('admin_enquiries') }}" class="admin-secondary-button">Reset</a>
+                </div>
+
+            </form>
+        </div>
+
+
+        <!-- RESULT INFO -->
+        <div class="admin-result-info">
+            Showing <strong>{{ enquiries|length }}</strong> of <strong>{{ total }}</strong> enquiries
+        </div>
+
+
+        <!-- TABLE -->
+        <div class="admin-table-wrap">
+
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Demo ID</th>
+                        <th>Customer</th>
+                        <th>Instrument</th>
+                        <th>Phone</th>
+                        <th>Teacher</th>
+                        <th>Demo</th>
+                        <th>Status</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for enquiry in enquiries %}
+                        <tr>
+                            <td><strong>{{ enquiry.demo_id }}</strong></td>
+
+                            <td>
+                                <strong>{{ enquiry.full_name }}</strong>
+                                <small>{{ enquiry.email }}</small>
+                            </td>
+
+                            <td>{{ enquiry.instrument }}</td>
+                            <td>{{ enquiry.phone }}</td>
+
+                            <td>
+                                {% if enquiry.assigned_teacher %}
+                                    {{ enquiry.assigned_teacher }}
+                                {% elif enquiry.teacher_name %}
+                                    {{ enquiry.teacher_name }}
+                                {% else %}
+                                    <span class="admin-muted">Not assigned</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                {% if enquiry.demo_date %}
+                                    <strong>{{ enquiry.demo_date }}</strong>
+                                    {% if enquiry.demo_time_display %}
+                                        <small>{{ enquiry.demo_time_display }}</small>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="admin-muted">Not scheduled</span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+                                <form class="admin-status-form" method="POST"
+                                      action="{{ url_for('update_enquiry_status', enquiry_id=enquiry.id) }}">
+                                    <select name="status" class="admin-inline-select" aria-label="Change status">
+                                        {% for item in allowed_statuses %}
+                                            <option value="{{ item }}" {% if enquiry.status == item %}selected{% endif %}>{{ item.replace('_', ' ') }}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <button type="submit" class="admin-primary-button admin-small-button">Save</button>
+                                </form>
+                            </td>
+
+                            <td>
+                                <a class="admin-primary-button admin-small-button"
+                                   href="{{ url_for('enquiry_details', enquiry_id=enquiry.id) }}">View</a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="8" class="admin-empty-state">No enquiries found.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- PAGINATION -->
+            {% if total_pages > 1 %}
+                <div class="admin-pagination">
+
+                    {% if page > 1 %}
+                        <a href="{{ url_for('admin_enquiries', q=q, status=status, instrument=instrument, date_from=date_from, date_to=date_to, period=period, page=page-1) }}">←</a>
+                    {% endif %}
+
+                    {% for page_number in range(1, total_pages + 1) %}
+                        {% if page_number == page %}
+                            <span class="current">{{ page_number }}</span>
+                        {% elif page_number <= 3 or page_number > total_pages - 3 or (page_number >= page - 1 and page_number <= page + 1) %}
+                            <a href="{{ url_for('admin_enquiries', q=q, status=status, instrument=instrument, date_from=date_from, date_to=date_to, period=period, page=page_number) }}">{{ page_number }}</a>
+                        {% endif %}
+                    {% endfor %}
+
+                    {% if page < total_pages %}
+                        <a href="{{ url_for('admin_enquiries', q=q, status=status, instrument=instrument, date_from=date_from, date_to=date_to, period=period, page=page+1) }}">→</a>
+                    {% endif %}
+
+                </div>
+            {% endif %}
+
+        </div>
 
     </main>
 
-  </div>
-
+    <script src="{{ url_for('static', filename='javascript/admin.js') }}"></script>
 </body>
 
 </html>

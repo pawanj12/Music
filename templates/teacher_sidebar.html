@@ -1,0 +1,112 @@
+{# TEACHER PORTAL SIDEBAR — admin sidebar jaisa hi design, teacher ke liye chhota menu. #}
+
+<aside class="admin-sidebar" id="adminSidebar">
+
+    <div class="admin-sidebar-brand">
+        <a href="{{ url_for('teacher_dashboard') }}" class="admin-brand-link">
+            <span class="admin-brand-dot"></span>
+            <span class="admin-brand-text">
+                Minerva
+                <small>Teacher Portal</small>
+            </span>
+        </a>
+        <button type="button" class="admin-sidebar-close" id="adminSidebarClose" aria-label="Close menu">✕</button>
+    </div>
+
+    <div class="admin-sidebar-user">
+        <strong>{{ teacher_name or session.get('user_name', 'Teacher') }}</strong>
+        <small>TEACHER</small>
+    </div>
+
+    <nav class="admin-nav" aria-label="Teacher navigation">
+
+        <a href="{{ url_for('teacher_dashboard') }}" class="admin-nav-item active">
+            <span class="admin-nav-icon">📊</span>
+            <span>Dashboard</span>
+        </a>
+
+        <a href="#assigned-demos" class="admin-nav-item">
+            <span class="admin-nav-icon">🎵</span>
+            <span>Demo Classes</span>
+        </a>
+
+        <a href="#assigned-students" class="admin-nav-item">
+            <span class="admin-nav-icon">🎓</span>
+            <span>Students</span>
+        </a>
+
+        <a href="#" data-soon class="admin-nav-item">
+            <span class="admin-nav-icon">🗓</span>
+            <span>Batches</span>
+        </a>
+
+        <a href="#" data-soon class="admin-nav-item">
+            <span class="admin-nav-icon">✅</span>
+            <span>Attendance</span>
+        </a>
+
+
+        <div class="admin-nav-label">Teaching</div>
+
+        <a href="#" data-soon class="admin-nav-item">
+            <span class="admin-nav-icon">📅</span>
+            <span>My Schedule</span>
+        </a>
+
+        <a href="#" data-soon class="admin-nav-item">
+            <span class="admin-nav-icon">📝</span>
+            <span>Lesson Plans</span>
+        </a>
+
+        <a href="#" data-soon class="admin-nav-item">
+            <span class="admin-nav-icon">📚</span>
+            <span>Study Material</span>
+        </a>
+
+        <a href="#" data-soon class="admin-nav-item">
+            <span class="admin-nav-icon">📈</span>
+            <span>Student Progress</span>
+        </a>
+
+
+        <div class="admin-nav-label">More</div>
+
+        <a href="#" data-soon class="admin-nav-item">
+            <span class="admin-nav-icon">📢</span>
+            <span>Notices</span>
+        </a>
+
+        <a href="#" data-soon class="admin-nav-item">
+            <span class="admin-nav-icon">👤</span>
+            <span>My Profile</span>
+        </a>
+
+    </nav>
+
+    <div class="admin-sidebar-bottom">
+
+        <button type="button" class="admin-theme-toggle" id="adminThemeToggle">
+            <span class="admin-theme-icon">◐</span>
+            <span>Theme</span>
+        </button>
+
+        <a href="{{ url_for('logout') }}" class="admin-nav-item admin-logout-item">
+            <span class="admin-nav-icon">↪</span>
+            <span>Logout</span>
+        </a>
+
+    </div>
+
+</aside>
+
+<div class="admin-sidebar-overlay" id="adminSidebarOverlay"></div>
+<header class="admin-mobile-bar">
+    <button type="button" id="adminMobileToggle" class="admin-mobile-toggle" aria-label="Open menu">☰</button>
+    <a href="{{ url_for('teacher_dashboard') }}" class="admin-brand-link">
+        <span class="admin-brand-dot"></span>
+        <span class="admin-brand-text">
+            Minerva
+            <small>Teacher Portal</small>
+        </span>
+    </a>
+</header>

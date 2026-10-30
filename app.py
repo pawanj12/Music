@@ -161,13 +161,16 @@ def init_db():
     conn.commit()
 
     # teacher_id was added later to an existing database.
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT COUNT(*)
         FROM information_schema.columns
         WHERE table_schema = %s
           AND table_name = 'demo_requests'
           AND column_name = 'teacher_id'
-    """, (database_name,))
+    """,
+        (database_name,),
+    )
 
     if cursor.fetchone()[0] == 0:
         cursor.execute("""
@@ -177,13 +180,16 @@ def init_db():
         conn.commit()
 
     # Add FK only when it does not already exist.
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT COUNT(*)
         FROM information_schema.table_constraints
         WHERE constraint_schema = %s
           AND table_name = 'demo_requests'
           AND constraint_name = 'fk_demo_requests_teacher'
-    """, (database_name,))
+    """,
+        (database_name,),
+    )
 
     if cursor.fetchone()[0] == 0:
         cursor.execute("""
@@ -252,6 +258,26 @@ def init_db():
                 REFERENCES demo_requests(id)
                 ON DELETE SET NULL
                 ON UPDATE CASCADE
+        )
+    """)
+
+    # --------------------------------------------------------
+    # COURSES
+    # --------------------------------------------------------
+
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS courses (
+            id INT AUTO_INCREMENT PRIMARY KEY,
+            course_code VARCHAR(50) NOT NULL UNIQUE,
+            course_name VARCHAR(150) NOT NULL,
+            instrument VARCHAR(100) NULL,
+            description TEXT NULL,
+            duration_months INT NULL,
+            monthly_fee DECIMAL(10,2) NULL,
+            is_active BOOLEAN NOT NULL DEFAULT TRUE,
+            created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+            updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
+                ON UPDATE CURRENT_TIMESTAMP
         )
     """)
 
@@ -331,7 +357,8 @@ def submit_enquiry():
     cursor = conn.cursor()
 
     try:
-        cursor.execute("""
+        cursor.execute(
+            """
             INSERT INTO demo_requests
             (
                 demo_id,
@@ -347,17 +374,19 @@ def submit_enquiry():
             )
             VALUES
             (%s, %s, %s, %s, %s, %s, %s, %s, 'NEW', %s)
-        """, (
-            demo_id,
-            full_name,
-            phone,
-            email,
-            instrument,
-            age_value,
-            preferred_time,
-            message,
-            datetime.now(),
-        ))
+        """,
+            (
+                demo_id,
+                full_name,
+                phone,
+                email,
+                instrument,
+                age_value,
+                preferred_time,
+                message,
+                datetime.now(),
+            ),
+        )
         conn.commit()
     except mysql.connector.Error:
         conn.rollback()
@@ -393,7 +422,8 @@ def login():
 
         conn = get_db()
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT
                 u.id,
                 u.full_name,
@@ -404,7 +434,9 @@ def login():
             FROM users u
             JOIN roles r ON u.role_id = r.id
             WHERE u.email = %s
-        """, (email,))
+        """,
+            (email,),
+        )
 
         user = cursor.fetchone()
         cursor.close()
@@ -591,11 +623,14 @@ def admin_enquiries():
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute(f"""
+    cursor.execute(
+        f"""
         SELECT COUNT(*) AS total
         FROM demo_requests dr
         {where_sql}
-    """, tuple(params))
+    """,
+        tuple(params),
+    )
     total = cursor.fetchone()["total"]
 
     total_pages = (total + per_page - 1) // per_page
@@ -603,7 +638,8 @@ def admin_enquiries():
     data_params = list(params)
     data_params.extend([per_page, offset])
 
-    cursor.execute(f"""
+    cursor.execute(
+        f"""
         SELECT
             dr.id,
             dr.demo_id,
@@ -626,7 +662,9 @@ def admin_enquiries():
         {where_sql}
         ORDER BY dr.id DESC
         LIMIT %s OFFSET %s
-    """, tuple(data_params))
+    """,
+        tuple(data_params),
+    )
 
     enquiries = cursor.fetchall()
 
@@ -682,7 +720,8 @@ def enquiry_details(enquiry_id):
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT
             dr.id,
             dr.demo_id,
@@ -704,7 +743,9 @@ def enquiry_details(enquiry_id):
         FROM demo_requests dr
         LEFT JOIN users t ON dr.teacher_id = t.id
         WHERE dr.id = %s
-    """, (enquiry_id,))
+    """,
+        (enquiry_id,),
+    )
 
     enquiry = cursor.fetchone()
 
@@ -725,12 +766,15 @@ def enquiry_details(enquiry_id):
     """)
     teachers = cursor.fetchall()
 
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT id, student_code
         FROM students
         WHERE source_enquiry_id = %s
         LIMIT 1
-    """, (enquiry_id,))
+    """,
+        (enquiry_id,),
+    )
     converted_student = cursor.fetchone()
 
     cursor.close()
@@ -776,16 +820,14 @@ def update_enquiry(enquiry_id):
 
     try:
         demo_date_value = (
-            datetime.strptime(demo_date, "%Y-%m-%d").date()
-            if demo_date else None
+            datetime.strptime(demo_date, "%Y-%m-%d").date() if demo_date else None
         )
     except ValueError:
         return "Invalid demo date.", 400
 
     try:
         demo_time_value = (
-            datetime.strptime(demo_time, "%H:%M").time()
-            if demo_time else None
+            datetime.strptime(demo_time, "%H:%M").time() if demo_time else None
         )
     except ValueError:
         return "Invalid demo time.", 400
@@ -797,14 +839,17 @@ def update_enquiry(enquiry_id):
         teacher_name_value = None
 
         if teacher_id_value:
-            cursor.execute("""
+            cursor.execute(
+                """
                 SELECT u.id, u.full_name
                 FROM users u
                 JOIN roles r ON u.role_id = r.id
                 WHERE u.id = %s
                   AND r.role_name = 'TEACHER'
                   AND u.is_active = TRUE
-            """, (teacher_id_value,))
+            """,
+                (teacher_id_value,),
+            )
 
             selected_teacher = cursor.fetchone()
 
@@ -815,7 +860,8 @@ def update_enquiry(enquiry_id):
 
             teacher_name_value = selected_teacher[1]
 
-        cursor.execute("""
+        cursor.execute(
+            """
             UPDATE demo_requests
             SET
                 teacher_id = %s,
@@ -824,14 +870,16 @@ def update_enquiry(enquiry_id):
                 demo_time = %s,
                 status = %s
             WHERE id = %s
-        """, (
-            teacher_id_value,
-            teacher_name_value,
-            demo_date_value,
-            demo_time_value,
-            status,
-            enquiry_id,
-        ))
+        """,
+            (
+                teacher_id_value,
+                teacher_name_value,
+                demo_date_value,
+                demo_time_value,
+                status,
+                enquiry_id,
+            ),
+        )
 
         conn.commit()
     except mysql.connector.Error:
@@ -865,11 +913,14 @@ def update_enquiry_status(enquiry_id):
 
     conn = get_db()
     cursor = conn.cursor()
-    cursor.execute("""
+    cursor.execute(
+        """
         UPDATE demo_requests
         SET status = %s
         WHERE id = %s
-    """, (new_status, enquiry_id))
+    """,
+        (new_status, enquiry_id),
+    )
     conn.commit()
     cursor.close()
     conn.close()
@@ -895,7 +946,8 @@ def teacher_dashboard():
     cursor = conn.cursor(dictionary=True)
 
     # Today's assigned demos.
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT
             dr.id,
             dr.demo_id,
@@ -914,11 +966,14 @@ def teacher_dashboard():
         WHERE dr.teacher_id = %s
           AND dr.demo_date = CURDATE()
         ORDER BY dr.demo_time ASC, dr.id DESC
-    """, (teacher_id,))
+    """,
+        (teacher_id,),
+    )
     todays_demos = cursor.fetchall()
 
     # Upcoming assigned demos.
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT
             dr.id,
             dr.demo_id,
@@ -938,11 +993,14 @@ def teacher_dashboard():
           AND dr.demo_date > CURDATE()
         ORDER BY dr.demo_date ASC, dr.demo_time ASC, dr.id DESC
         LIMIT 100
-    """, (teacher_id,))
+    """,
+        (teacher_id,),
+    )
     upcoming_demos = cursor.fetchall()
 
     # Assigned demos without a scheduled date yet.
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT
             dr.id,
             dr.demo_id,
@@ -962,28 +1020,37 @@ def teacher_dashboard():
           AND dr.demo_date IS NULL
         ORDER BY dr.id DESC
         LIMIT 100
-    """, (teacher_id,))
+    """,
+        (teacher_id,),
+    )
     unscheduled_demos = cursor.fetchall()
 
     # Completed count.
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT COUNT(*) AS total
         FROM demo_requests
         WHERE teacher_id = %s
           AND status = 'DEMO_COMPLETED'
-    """, (teacher_id,))
+    """,
+        (teacher_id,),
+    )
     completed_count = cursor.fetchone()["total"]
 
     # All assigned demos count.
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT COUNT(*) AS total
         FROM demo_requests
         WHERE teacher_id = %s
-    """, (teacher_id,))
+    """,
+        (teacher_id,),
+    )
     assigned_count = cursor.fetchone()["total"]
 
     # Assigned students.
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT
             s.id,
             s.student_code,
@@ -999,7 +1066,9 @@ def teacher_dashboard():
         WHERE s.teacher_id = %s
         ORDER BY s.id DESC
         LIMIT 100
-    """, (teacher_id,))
+    """,
+        (teacher_id,),
+    )
     assigned_students = cursor.fetchall()
 
     for collection in (todays_demos, upcoming_demos, unscheduled_demos):
@@ -1184,20 +1253,24 @@ def add_teacher():
                 salt_length=16,
             )
 
-            cursor.execute("""
+            cursor.execute(
+                """
                 INSERT INTO users
                 (full_name, email, password_hash, role_id)
                 VALUES (%s, %s, %s, %s)
-            """, (
-                full_name,
-                email,
-                password_hash,
-                teacher_role["id"],
-            ))
+            """,
+                (
+                    full_name,
+                    email,
+                    password_hash,
+                    teacher_role["id"],
+                ),
+            )
 
             teacher_user_id = cursor.lastrowid
 
-            cursor.execute("""
+            cursor.execute(
+                """
                 INSERT INTO teacher_profiles
                 (
                     user_id,
@@ -1209,15 +1282,17 @@ def add_teacher():
                     joining_date
                 )
                 VALUES (%s, %s, %s, %s, %s, %s, %s)
-            """, (
-                teacher_user_id,
-                phone or None,
-                instrument or None,
-                experience_value,
-                qualification or None,
-                bio or None,
-                joining_date or None,
-            ))
+            """,
+                (
+                    teacher_user_id,
+                    phone or None,
+                    instrument or None,
+                    experience_value,
+                    qualification or None,
+                    bio or None,
+                    joining_date or None,
+                ),
+            )
 
             conn.commit()
             cursor.close()
@@ -1333,22 +1408,29 @@ def edit_teacher(teacher_id):
                     method="pbkdf2:sha256",
                     salt_length=16,
                 )
-                cursor.execute("""
+                cursor.execute(
+                    """
                     UPDATE users
                     SET full_name = %s,
                         email = %s,
                         password_hash = %s
                     WHERE id = %s
-                """, (full_name, email, password_hash, teacher_id))
+                """,
+                    (full_name, email, password_hash, teacher_id),
+                )
             else:
-                cursor.execute("""
+                cursor.execute(
+                    """
                     UPDATE users
                     SET full_name = %s,
                         email = %s
                     WHERE id = %s
-                """, (full_name, email, teacher_id))
+                """,
+                    (full_name, email, teacher_id),
+                )
 
-            cursor.execute("""
+            cursor.execute(
+                """
                 INSERT INTO teacher_profiles
                 (
                     user_id,
@@ -1367,15 +1449,17 @@ def edit_teacher(teacher_id):
                     qualification = VALUES(qualification),
                     bio = VALUES(bio),
                     joining_date = VALUES(joining_date)
-            """, (
-                teacher_id,
-                phone or None,
-                instrument or None,
-                experience_value,
-                qualification or None,
-                bio or None,
-                joining_date or None,
-            ))
+            """,
+                (
+                    teacher_id,
+                    phone or None,
+                    instrument or None,
+                    experience_value,
+                    qualification or None,
+                    bio or None,
+                    joining_date or None,
+                ),
+            )
 
             conn.commit()
             cursor.close()
@@ -1400,7 +1484,8 @@ def edit_teacher(teacher_id):
                 role=session.get("role"),
             )
 
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT
             u.id,
             u.full_name,
@@ -1417,7 +1502,9 @@ def edit_teacher(teacher_id):
         LEFT JOIN teacher_profiles p ON u.id = p.user_id
         WHERE u.id = %s
           AND r.role_name = 'TEACHER'
-    """, (teacher_id,))
+    """,
+        (teacher_id,),
+    )
 
     teacher = cursor.fetchone()
     cursor.close()
@@ -1451,13 +1538,16 @@ def toggle_teacher_status(teacher_id):
     conn = get_db()
     cursor = conn.cursor()
 
-    cursor.execute("""
+    cursor.execute(
+        """
         UPDATE users u
         JOIN roles r ON u.role_id = r.id
         SET u.is_active = NOT u.is_active
         WHERE u.id = %s
           AND r.role_name = 'TEACHER'
-    """, (teacher_id,))
+    """,
+        (teacher_id,),
+    )
 
     conn.commit()
     cursor.close()
@@ -1624,7 +1714,8 @@ def add_student():
         # Insert first, then use the real AUTO_INCREMENT id to create the code.
         # This avoids relying on MAX(id) during normal creation.
         try:
-            cursor.execute("""
+            cursor.execute(
+                """
                 INSERT INTO students
                 (
                     student_code,
@@ -1640,26 +1731,31 @@ def add_student():
                 )
                 VALUES
                 ('TEMP', %s, %s, %s, %s, %s, %s, %s, %s, %s)
-            """, (
-                full_name,
-                phone or None,
-                email or None,
-                age_value,
-                instrument or None,
-                teacher_value,
-                enrollment_date or None,
-                status,
-                notes or None,
-            ))
+            """,
+                (
+                    full_name,
+                    phone or None,
+                    email or None,
+                    age_value,
+                    instrument or None,
+                    teacher_value,
+                    enrollment_date or None,
+                    status,
+                    notes or None,
+                ),
+            )
 
             student_id = cursor.lastrowid
             student_code = f"MIN-STU-{student_id:04d}"
 
-            cursor.execute("""
+            cursor.execute(
+                """
                 UPDATE students
                 SET student_code = %s
                 WHERE id = %s
-            """, (student_code, student_id))
+            """,
+                (student_code, student_id),
+            )
 
             conn.commit()
         except mysql.connector.Error as e:
@@ -1705,7 +1801,6 @@ def edit_student(student_id):
         cursor.close()
         conn.close()
         return "Student not found", 404
-
     cursor.execute("""
         SELECT u.id, u.full_name
         FROM users u
@@ -1751,7 +1846,8 @@ def edit_student(student_id):
             )
 
         try:
-            cursor.execute("""
+            cursor.execute(
+                """
                 UPDATE students
                 SET
                     full_name = %s,
@@ -1764,18 +1860,20 @@ def edit_student(student_id):
                     status = %s,
                     notes = %s
                 WHERE id = %s
-            """, (
-                full_name,
-                phone or None,
-                email or None,
-                age_value,
-                instrument or None,
-                teacher_value,
-                enrollment_date or None,
-                status,
-                notes or None,
-                student_id,
-            ))
+            """,
+                (
+                    full_name,
+                    phone or None,
+                    email or None,
+                    age_value,
+                    instrument or None,
+                    teacher_value,
+                    enrollment_date or None,
+                    status,
+                    notes or None,
+                    student_id,
+                ),
+            )
             conn.commit()
         except mysql.connector.Error as e:
             conn.rollback()
@@ -1813,7 +1911,8 @@ def student_details(student_id):
     conn = get_db()
     cursor = conn.cursor(dictionary=True)
 
-    cursor.execute("""
+    cursor.execute(
+        """
         SELECT
             s.*,
             u.full_name AS teacher_name,
@@ -1821,7 +1920,9 @@ def student_details(student_id):
         FROM students s
         LEFT JOIN users u ON s.teacher_id = u.id
         WHERE s.id = %s
-    """, (student_id,))
+    """,
+        (student_id,),
+    )
     student = cursor.fetchone()
 
     if not student:
@@ -1866,11 +1967,14 @@ def toggle_student_status(student_id):
 
     new_status = "INACTIVE" if student["status"] == "ACTIVE" else "ACTIVE"
 
-    cursor.execute("""
+    cursor.execute(
+        """
         UPDATE students
         SET status = %s
         WHERE id = %s
-    """, (new_status, student_id))
+    """,
+        (new_status, student_id),
+    )
     conn.commit()
     cursor.close()
     conn.close()
@@ -1918,11 +2022,14 @@ def convert_enquiry_to_student(enquiry_id):
     cursor = conn.cursor(dictionary=True)
 
     try:
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT *
             FROM demo_requests
             WHERE id = %s
-        """, (enquiry_id,))
+        """,
+            (enquiry_id,),
+        )
         enquiry = cursor.fetchone()
 
         if not enquiry:
@@ -1930,24 +2037,30 @@ def convert_enquiry_to_student(enquiry_id):
             conn.close()
             return "Enquiry not found", 404
 
-        cursor.execute("""
+        cursor.execute(
+            """
             SELECT id, student_code
             FROM students
             WHERE source_enquiry_id = %s
             LIMIT 1
-        """, (enquiry_id,))
+        """,
+            (enquiry_id,),
+        )
         existing_student = cursor.fetchone()
 
         if existing_student:
             cursor.close()
             conn.close()
-            return redirect(url_for(
-                "student_details",
-                student_id=existing_student["id"],
-            ))
+            return redirect(
+                url_for(
+                    "student_details",
+                    student_id=existing_student["id"],
+                )
+            )
 
         # Create student with temporary unique value, then replace it using id.
-        cursor.execute("""
+        cursor.execute(
+            """
             INSERT INTO students
             (
                 student_code,
@@ -1967,32 +2080,40 @@ def convert_enquiry_to_student(enquiry_id):
                 %s, %s, %s, %s, %s, %s, %s, %s,
                 CURDATE(), 'ACTIVE', %s
             )
-        """, (
-            f"TEMP-{uuid.uuid4().hex}",
-            enquiry["full_name"],
-            enquiry["phone"],
-            enquiry["email"],
-            enquiry["age"],
-            enquiry["instrument"],
-            enquiry.get("teacher_id"),
-            enquiry_id,
-            enquiry.get("message"),
-        ))
+        """,
+            (
+                f"TEMP-{uuid.uuid4().hex}",
+                enquiry["full_name"],
+                enquiry["phone"],
+                enquiry["email"],
+                enquiry["age"],
+                enquiry["instrument"],
+                enquiry.get("teacher_id"),
+                enquiry_id,
+                enquiry.get("message"),
+            ),
+        )
 
         student_id = cursor.lastrowid
         student_code = f"MIN-STU-{student_id:04d}"
 
-        cursor.execute("""
+        cursor.execute(
+            """
             UPDATE students
             SET student_code = %s
             WHERE id = %s
-        """, (student_code, student_id))
+        """,
+            (student_code, student_id),
+        )
 
-        cursor.execute("""
+        cursor.execute(
+            """
             UPDATE demo_requests
             SET status = 'ENROLLED'
             WHERE id = %s
-        """, (enquiry_id,))
+        """,
+            (enquiry_id,),
+        )
 
         conn.commit()
     except mysql.connector.Error as e:
@@ -2005,6 +2126,366 @@ def convert_enquiry_to_student(enquiry_id):
     conn.close()
 
     return redirect(url_for("student_details", student_id=student_id))
+
+
+# ============================================================
+# ADMIN COURSES
+# ============================================================
+
+
+@app.route("/admin/courses")
+def admin_courses():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+
+    if session.get("role") != "SUPER_ADMIN":
+        return "Access Denied", 403
+
+    q = request.args.get("q", "").strip()
+    status_filter = request.args.get("status", "all").strip().lower()
+
+    conditions = []
+    params = []
+
+    if q:
+        search_value = f"%{q}%"
+        conditions.append(
+            "(course_code LIKE %s OR course_name LIKE %s OR instrument LIKE %s)"
+        )
+        params.extend([search_value, search_value, search_value])
+
+    if status_filter == "active":
+        conditions.append("is_active = TRUE")
+    elif status_filter == "inactive":
+        conditions.append("is_active = FALSE")
+    elif status_filter != "all":
+        status_filter = "all"
+
+    where_sql = "WHERE " + " AND ".join(conditions) if conditions else ""
+
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute(
+        f"""
+        SELECT id, course_code, course_name, instrument, description,
+               duration_months, monthly_fee, is_active, created_at, updated_at
+        FROM courses
+        {where_sql}
+        ORDER BY is_active DESC, course_name ASC
+    """,
+        tuple(params),
+    )
+    course_rows = cursor.fetchall()
+
+    cursor.execute("SELECT COUNT(*) AS total FROM courses")
+    total_courses = cursor.fetchone()["total"]
+    cursor.execute("SELECT COUNT(*) AS total FROM courses WHERE is_active = TRUE")
+    active_courses = cursor.fetchone()["total"]
+    cursor.execute("SELECT COUNT(*) AS total FROM courses WHERE is_active = FALSE")
+    inactive_courses = cursor.fetchone()["total"]
+    cursor.close()
+    conn.close()
+
+    return render_template(
+        "admin_courses.html",
+        courses=course_rows,
+        q=q,
+        status_filter=status_filter,
+        total_courses=total_courses,
+        active_courses=active_courses,
+        inactive_courses=inactive_courses,
+        user_name=session.get("user_name"),
+        role=session.get("role"),
+        active_page="courses",
+    )
+
+
+@app.route("/admin/courses/new", methods=["GET", "POST"])
+def admin_course_new():
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    if session.get("role") != "SUPER_ADMIN":
+        return "Access Denied", 403
+
+    if request.method == "POST":
+        course_code = request.form.get("course_code", "").strip().upper()
+        course_name = request.form.get("course_name", "").strip()
+        instrument = request.form.get("instrument", "").strip()
+        description = request.form.get("description", "").strip()
+        duration_text = request.form.get("duration_months", "").strip()
+        fee_text = request.form.get("monthly_fee", "").strip()
+        is_active = request.form.get("is_active") == "on"
+
+        if not course_code or not course_name:
+            return render_template(
+                "course_form.html",
+                course=None,
+                error="Course code and course name are required.",
+                user_name=session.get("user_name"),
+                role=session.get("role"),
+                active_page="courses",
+            )
+
+        try:
+            duration_months = int(duration_text) if duration_text else None
+            if duration_months is not None and duration_months < 1:
+                raise ValueError
+        except ValueError:
+            return render_template(
+                "course_form.html",
+                course=None,
+                error="Duration must be a whole number greater than 0.",
+                user_name=session.get("user_name"),
+                role=session.get("role"),
+                active_page="courses",
+            )
+
+        try:
+            monthly_fee = float(fee_text) if fee_text else None
+            if monthly_fee is not None and monthly_fee < 0:
+                raise ValueError
+        except ValueError:
+            return render_template(
+                "course_form.html",
+                course=None,
+                error="Monthly fee must be a valid non-negative amount.",
+                user_name=session.get("user_name"),
+                role=session.get("role"),
+                active_page="courses",
+            )
+
+        conn = get_db()
+        cursor = conn.cursor()
+        try:
+            cursor.execute(
+                """
+                INSERT INTO courses
+                    (course_code, course_name, instrument, description,
+                     duration_months, monthly_fee, is_active)
+                VALUES (%s, %s, %s, %s, %s, %s, %s)
+            """,
+                (
+                    course_code,
+                    course_name,
+                    instrument or None,
+                    description or None,
+                    duration_months,
+                    monthly_fee,
+                    is_active,
+                ),
+            )
+            conn.commit()
+        except mysql.connector.IntegrityError:
+            conn.rollback()
+            cursor.close()
+            conn.close()
+            return render_template(
+                "course_form.html",
+                course=None,
+                error="This course code already exists. Please use a different code.",
+                user_name=session.get("user_name"),
+                role=session.get("role"),
+                active_page="courses",
+            )
+        except mysql.connector.Error:
+            conn.rollback()
+            cursor.close()
+            conn.close()
+            return (
+                render_template(
+                    "course_form.html",
+                    course=None,
+                    error="The course could not be saved. Please try again.",
+                    user_name=session.get("user_name"),
+                    role=session.get("role"),
+                    active_page="courses",
+                ),
+                500,
+            )
+
+        cursor.close()
+        conn.close()
+        return redirect(url_for("admin_courses", created="1"))
+
+    return render_template(
+        "course_form.html",
+        course=None,
+        user_name=session.get("user_name"),
+        role=session.get("role"),
+        active_page="courses",
+    )
+
+
+@app.route("/admin/courses/<int:course_id>/edit", methods=["GET", "POST"])
+def admin_course_edit(course_id):
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    if session.get("role") != "SUPER_ADMIN":
+        return "Access Denied", 403
+
+    conn = get_db()
+    cursor = conn.cursor(dictionary=True)
+    cursor.execute("SELECT * FROM courses WHERE id = %s", (course_id,))
+    course = cursor.fetchone()
+    if not course:
+        cursor.close()
+        conn.close()
+        return "Course not found.", 404
+
+    if request.method == "POST":
+        course_code = request.form.get("course_code", "").strip().upper()
+        course_name = request.form.get("course_name", "").strip()
+        instrument = request.form.get("instrument", "").strip()
+        description = request.form.get("description", "").strip()
+        duration_text = request.form.get("duration_months", "").strip()
+        fee_text = request.form.get("monthly_fee", "").strip()
+        is_active = request.form.get("is_active") == "on"
+
+        course.update(
+            {
+                "course_code": course_code,
+                "course_name": course_name,
+                "instrument": instrument,
+                "description": description,
+                "duration_months": duration_text,
+                "monthly_fee": fee_text,
+                "is_active": is_active,
+            }
+        )
+
+        if not course_code or not course_name:
+            cursor.close()
+            conn.close()
+            return render_template(
+                "course_form.html",
+                course=course,
+                error="Course code and course name are required.",
+                user_name=session.get("user_name"),
+                role=session.get("role"),
+                active_page="courses",
+            )
+
+        try:
+            duration_months = int(duration_text) if duration_text else None
+            if duration_months is not None and duration_months < 1:
+                raise ValueError
+        except ValueError:
+            cursor.close()
+            conn.close()
+            return render_template(
+                "course_form.html",
+                course=course,
+                error="Duration must be a whole number greater than 0.",
+                user_name=session.get("user_name"),
+                role=session.get("role"),
+                active_page="courses",
+            )
+
+        try:
+            monthly_fee = float(fee_text) if fee_text else None
+            if monthly_fee is not None and monthly_fee < 0:
+                raise ValueError
+        except ValueError:
+            cursor.close()
+            conn.close()
+            return render_template(
+                "course_form.html",
+                course=course,
+                error="Monthly fee must be a valid non-negative amount.",
+                user_name=session.get("user_name"),
+                role=session.get("role"),
+                active_page="courses",
+            )
+
+        try:
+            cursor.execute(
+                """
+                UPDATE courses
+                SET course_code = %s, course_name = %s, instrument = %s,
+                    description = %s, duration_months = %s, monthly_fee = %s,
+                    is_active = %s
+                WHERE id = %s
+            """,
+                (
+                    course_code,
+                    course_name,
+                    instrument or None,
+                    description or None,
+                    duration_months,
+                    monthly_fee,
+                    is_active,
+                    course_id,
+                ),
+            )
+            conn.commit()
+        except mysql.connector.IntegrityError:
+            conn.rollback()
+            cursor.close()
+            conn.close()
+            return render_template(
+                "course_form.html",
+                course=course,
+                error="This course code is already used by another course.",
+                user_name=session.get("user_name"),
+                role=session.get("role"),
+                active_page="courses",
+            )
+        except mysql.connector.Error:
+            conn.rollback()
+            cursor.close()
+            conn.close()
+            return (
+                render_template(
+                    "course_form.html",
+                    course=course,
+                    error="The course could not be updated. Please try again.",
+                    user_name=session.get("user_name"),
+                    role=session.get("role"),
+                    active_page="courses",
+                ),
+                500,
+            )
+
+        cursor.close()
+        conn.close()
+        return redirect(url_for("admin_courses", updated="1"))
+
+    cursor.close()
+    conn.close()
+    return render_template(
+        "course_form.html",
+        course=course,
+        user_name=session.get("user_name"),
+        role=session.get("role"),
+        active_page="courses",
+    )
+
+
+@app.route("/admin/courses/<int:course_id>/toggle-status", methods=["POST"])
+def admin_course_toggle_status(course_id):
+    if "user_id" not in session:
+        return redirect(url_for("login"))
+    if session.get("role") != "SUPER_ADMIN":
+        return "Access Denied", 403
+
+    conn = get_db()
+    cursor = conn.cursor()
+    cursor.execute(
+        """
+        UPDATE courses
+        SET is_active = NOT is_active
+        WHERE id = %s
+    """,
+        (course_id,),
+    )
+    conn.commit()
+    changed = cursor.rowcount
+    cursor.close()
+    conn.close()
+
+    if not changed:
+        return "Course not found.", 404
+    return redirect(url_for("admin_courses", status_changed="1"))
 
 
 # ============================================================

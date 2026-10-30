@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" data-admin-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Courses Management — Minerva Admin</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/admin.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/courses-admin.css') }}">
+</head>
+<body>
+    {% include 'admin_sidebar.html' %}
+    <main class="admin-main courses-page">
+        <header class="admin-page-header">
+            <div>
+                <p class="admin-eyebrow">ACADEMIC MANAGEMENT</p>
+                <h1>Courses</h1>
+                <p>Manage the music courses offered by Minerva Music Institute.</p>
+            </div>
+            <a class="admin-primary-button" href="{{ url_for('admin_course_new') }}">＋ Add course</a>
+        </header>
+
+        {% if request.args.get('created') %}<div class="admin-alert admin-alert-success">Course created successfully.</div>{% endif %}
+        {% if request.args.get('updated') %}<div class="admin-alert admin-alert-success">Course updated successfully.</div>{% endif %}
+        {% if request.args.get('status_changed') %}<div class="admin-alert admin-alert-success">Course status changed.</div>{% endif %}
+
+        <section class="course-stat-grid" aria-label="Course summary">
+            <article class="admin-card course-stat"><span>Total courses</span><strong>{{ total_courses }}</strong></article>
+            <article class="admin-card course-stat"><span>Active courses</span><strong>{{ active_courses }}</strong></article>
+            <article class="admin-card course-stat"><span>Inactive courses</span><strong>{{ inactive_courses }}</strong></article>
+        </section>
+
+        <section class="admin-card course-list-card">
+            <div class="admin-card-header">
+                <div><span class="admin-card-kicker">COURSE CATALOGUE</span><h2>All courses</h2></div>
+            </div>
+            <form method="GET" action="{{ url_for('admin_courses') }}" class="course-filter-form">
+                <label class="course-field course-search-field"><span>Search courses</span><input type="search" name="q" value="{{ q }}" placeholder="Course name, code or instrument"></label>
+                <label class="course-field"><span>Status</span><select name="status"><option value="all" {% if status_filter == 'all' %}selected{% endif %}>All courses</option><option value="active" {% if status_filter == 'active' %}selected{% endif %}>Active</option><option value="inactive" {% if status_filter == 'inactive' %}selected{% endif %}>Inactive</option></select></label>
+                <div class="course-filter-actions"><button class="admin-primary-button" type="submit">Apply filters</button><a class="admin-secondary-button" href="{{ url_for('admin_courses') }}">Reset</a></div>
+            </form>
+
+            {% if courses %}
+            <div class="admin-table-wrap">
+                <table class="admin-table course-table">
+                    <thead><tr><th>Course</th><th>Instrument</th><th>Duration</th><th>Monthly fee</th><th>Status</th><th>Actions</th></tr></thead>
+                    <tbody>
+                    {% for course in courses %}
+                        <tr>
+                            <td><div class="course-name-cell"><strong>{{ course.course_name }}</strong><small>{{ course.course_code }}</small></div></td>
+                            <td>{{ course.instrument or '—' }}</td>
+                            <td>{% if course.duration_months %}{{ course.duration_months }} month{% if course.duration_months != 1 %}s{% endif %}{% else %}—{% endif %}</td>
+                            <td>{% if course.monthly_fee is not none %}₹{{ '%.2f'|format(course.monthly_fee) }}{% else %}—{% endif %}</td>
+                            <td><span class="admin-status">{{ 'Active' if course.is_active else 'Inactive' }}</span></td>
+                            <td><div class="course-row-actions"><a class="admin-secondary-button course-small-button" href="{{ url_for('admin_course_edit', course_id=course.id) }}">Edit</a><form method="POST" action="{{ url_for('admin_course_toggle_status', course_id=course.id) }}" onsubmit="return confirm('Change this course status?');"><button class="admin-secondary-button course-small-button" type="submit">{{ 'Deactivate' if course.is_active else 'Activate' }}</button></form></div></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="admin-empty-state"><strong>No courses found</strong><p>{% if q or status_filter != 'all' %}Try changing your search or filters.{% else %}Add your first course to start building the course catalogue.{% endif %}</p><a class="admin-primary-button" href="{{ url_for('admin_course_new') }}">Add your first course</a></div>
+            {% endif %}
+        </section>
+    </main>
+    <script src="{{ url_for('static', filename='javascript/admin.js') }}"></script>
+</body>
+</html>
